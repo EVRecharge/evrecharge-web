@@ -6,8 +6,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
@@ -21,8 +21,8 @@ import { AuthService } from '../../../core/services/auth.service';
     MatInputModule,
     MatButtonModule,
     MatCardModule,
-    MatProgressSpinnerModule,
     MatIconModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
@@ -34,6 +34,18 @@ export class Login implements OnInit {
 
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
+  readonly hideDriverPassword = signal(true);
+  readonly hideProviderPassword = signal(true);
+
+  readonly driverForm = this.fb.nonNullable.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', Validators.required],
+  });
+
+  readonly providerForm = this.fb.nonNullable.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', Validators.required],
+  });
 
   ngOnInit(): void {
     const session = this.auth.session();
@@ -42,29 +54,19 @@ export class Login implements OnInit {
     }
   }
 
-  readonly userForm = this.fb.nonNullable.group({
-    firstName: ['', [Validators.required, Validators.minLength(2)]],
-    lastName: ['', [Validators.required, Validators.minLength(2)]],
-    email: ['', [Validators.required, Validators.email]],
-  });
-
-  readonly providerForm = this.fb.nonNullable.group({
-    email: ['', [Validators.required, Validators.email]],
-  });
-
-  submitUser(): void {
-    if (this.userForm.invalid) {
-      this.userForm.markAllAsTouched();
+  submitDriver(): void {
+    if (this.driverForm.invalid) {
+      this.driverForm.markAllAsTouched();
       return;
     }
-    const { firstName, lastName, email } = this.userForm.getRawValue();
+    const { email, password } = this.driverForm.getRawValue();
     this.loading.set(true);
     this.error.set(null);
-    this.auth.continueAsUser(email, firstName, lastName).subscribe({
+    this.auth.loginAsUser(email, password).subscribe({
       next: () => this.router.navigateByUrl('/user/find-charging'),
-      error: () => {
+      error: (err) => {
         this.loading.set(false);
-        this.error.set('Could not sign in. Please check your details and try again.');
+        this.error.set(err?.error?.error ?? 'Invalid email or password.');
       },
     });
   }
@@ -74,22 +76,14 @@ export class Login implements OnInit {
       this.providerForm.markAllAsTouched();
       return;
     }
-    const { email } = this.providerForm.getRawValue();
+    const { email, password } = this.providerForm.getRawValue();
     this.loading.set(true);
     this.error.set(null);
-    this.auth.findProviderAccount(email).subscribe({
-      next: (provider) => {
+    this.auth.loginAsProvider(email, password).subscribe({
+      next: () => this.router.navigateByUrl('/provider/profile'),
+      error: (err) => {
         this.loading.set(false);
-        if (provider) {
-          this.auth.continueAsProvider(provider);
-          this.router.navigateByUrl('/provider/profile');
-        } else {
-          this.router.navigate(['/register/provider'], { queryParams: { email } });
-        }
-      },
-      error: () => {
-        this.loading.set(false);
-        this.error.set('Something went wrong looking up that account. Please try again.');
+        this.error.set(err?.error?.error ?? 'Invalid email or password.');
       },
     });
   }

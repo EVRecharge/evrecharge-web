@@ -8,6 +8,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/login/login').then((m) => m.Login),
   },
   {
+    path: 'register/driver',
+    loadComponent: () => import('./features/auth/register-driver/register-driver').then((m) => m.RegisterDriver),
+  },
+  {
     path: 'register/provider',
     loadComponent: () =>
       import('./features/auth/register-provider/register-provider').then((m) => m.RegisterProvider),

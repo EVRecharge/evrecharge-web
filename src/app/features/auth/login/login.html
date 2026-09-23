@@ -12,28 +12,36 @@
 
     <mat-tab-group animationDuration="150ms" mat-stretch-tabs="true">
       <mat-tab label="I'm a Driver">
-        <form [formGroup]="userForm" (ngSubmit)="submitUser()" class="evr-tab-form">
-          <mat-form-field appearance="outline" class="evr-form-field">
-            <mat-label>First name</mat-label>
-            <input matInput formControlName="firstName" required />
-            @if (userForm.controls.firstName.invalid && userForm.controls.firstName.touched) {
-              <mat-error>First name must be at least 2 characters.</mat-error>
-            }
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="evr-form-field">
-            <mat-label>Last name</mat-label>
-            <input matInput formControlName="lastName" required />
-            @if (userForm.controls.lastName.invalid && userForm.controls.lastName.touched) {
-              <mat-error>Last name must be at least 2 characters.</mat-error>
-            }
-          </mat-form-field>
-
+        <form [formGroup]="driverForm" (ngSubmit)="submitDriver()" class="evr-tab-form">
           <mat-form-field appearance="outline" class="evr-form-field">
             <mat-label>Email</mat-label>
-            <input matInput type="email" formControlName="email" required />
-            @if (userForm.controls.email.invalid && userForm.controls.email.touched) {
+            <input matInput type="email" formControlName="email" required autocomplete="email" />
+            @if (driverForm.controls.email.invalid && driverForm.controls.email.touched) {
               <mat-error>Enter a valid email address.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="evr-form-field">
+            <mat-label>Password</mat-label>
+            <input
+              matInput
+              [type]="hideDriverPassword() ? 'password' : 'text'"
+              formControlName="password"
+              required
+              autocomplete="current-password"
+            />
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="hideDriverPassword.set(!hideDriverPassword())"
+              [attr.aria-label]="'Hide password'"
+              [attr.aria-pressed]="!hideDriverPassword()"
+            >
+              <mat-icon>{{ hideDriverPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            @if (driverForm.controls.password.invalid && driverForm.controls.password.touched) {
+              <mat-error>Password is required.</mat-error>
             }
           </mat-form-field>
 
@@ -41,9 +49,11 @@
             @if (loading()) {
               <mat-spinner diameter="20"></mat-spinner>
             } @else {
-              Continue as Driver
+              Log in
             }
           </button>
+
+          <p class="evr-hint">New driver? <a routerLink="/register/driver">Create an account</a></p>
         </form>
       </mat-tab>
 
@@ -51,9 +61,33 @@
         <form [formGroup]="providerForm" (ngSubmit)="submitProvider()" class="evr-tab-form">
           <mat-form-field appearance="outline" class="evr-form-field">
             <mat-label>Business email</mat-label>
-            <input matInput type="email" formControlName="email" required />
+            <input matInput type="email" formControlName="email" required autocomplete="email" />
             @if (providerForm.controls.email.invalid && providerForm.controls.email.touched) {
               <mat-error>Enter a valid email address.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="evr-form-field">
+            <mat-label>Password</mat-label>
+            <input
+              matInput
+              [type]="hideProviderPassword() ? 'password' : 'text'"
+              formControlName="password"
+              required
+              autocomplete="current-password"
+            />
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="hideProviderPassword.set(!hideProviderPassword())"
+              [attr.aria-label]="'Hide password'"
+              [attr.aria-pressed]="!hideProviderPassword()"
+            >
+              <mat-icon>{{ hideProviderPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            @if (providerForm.controls.password.invalid && providerForm.controls.password.touched) {
+              <mat-error>Password is required.</mat-error>
             }
           </mat-form-field>
 
@@ -61,7 +95,7 @@
             @if (loading()) {
               <mat-spinner diameter="20"></mat-spinner>
             } @else {
-              Continue as Provider
+              Log in
             }
           </button>
 

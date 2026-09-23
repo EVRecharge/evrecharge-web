@@ -1,0 +1,106 @@
+<div class="evr-register-page">
+  <mat-card class="evr-register-card">
+    <div class="evr-brand-row">
+      <mat-icon class="evr-logo">ev_station</mat-icon>
+      <h1>Create your driver account</h1>
+    </div>
+
+    @if (error()) {
+      <div class="evr-error-banner">{{ error() }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="evr-form">
+      <div class="evr-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>First name</mat-label>
+          <input matInput formControlName="firstName" required />
+          @if (form.controls.firstName.invalid && form.controls.firstName.touched) {
+            <mat-error>First name must be at least 2 characters.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Last name</mat-label>
+          <input matInput formControlName="lastName" required />
+          @if (form.controls.lastName.invalid && form.controls.lastName.touched) {
+            <mat-error>Last name must be at least 2 characters.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" required autocomplete="email" />
+          @if (form.controls.email.invalid && form.controls.email.touched) {
+            <mat-error>Enter a valid email address.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Phone number</mat-label>
+          <input matInput formControlName="phoneNumber" required />
+          @if (form.controls.phoneNumber.invalid && form.controls.phoneNumber.touched) {
+            <mat-error>Enter a valid phone number.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Password</mat-label>
+          <input
+            matInput
+            [type]="hidePassword() ? 'password' : 'text'"
+            formControlName="password"
+            required
+            autocomplete="new-password"
+          />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="hidePassword.set(!hidePassword())"
+            [attr.aria-label]="'Hide password'"
+            [attr.aria-pressed]="!hidePassword()"
+          >
+            <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (form.controls.password.invalid && form.controls.password.touched) {
+            <mat-error>Password must be at least 8 characters.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Confirm password</mat-label>
+          <input
+            matInput
+            [type]="hideConfirm() ? 'password' : 'text'"
+            formControlName="confirmPassword"
+            required
+            autocomplete="new-password"
+          />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="hideConfirm.set(!hideConfirm())"
+            [attr.aria-label]="'Hide password'"
+            [attr.aria-pressed]="!hideConfirm()"
+          >
+            <mat-icon>{{ hideConfirm() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (form.controls.confirmPassword.errors?.['passwordMismatch'] && form.controls.confirmPassword.touched) {
+            <mat-error>Passwords don't match.</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <button mat-flat-button color="primary" type="submit" class="evr-submit" [disabled]="loading()">
+        @if (loading()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          Create account
+        }
+      </button>
+
+      <p class="evr-hint">Already have an account? <a routerLink="/login">Back to login</a></p>
+    </form>
+  </mat-card>
+</div>

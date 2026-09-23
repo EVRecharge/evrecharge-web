@@ -4,9 +4,11 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Provider } from '../models/provider.model';
 
-interface RegisterResponse {
+interface AuthResponse {
   message: string;
   provider: Provider;
+  token: string;
+  refreshToken: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -14,16 +16,12 @@ export class ProviderService {
   private readonly http = inject(HttpClient);
   private readonly base = environment.apiUrls.provider;
 
-  /**
-   * provider-service has no login/OAuth endpoint yet (unlike user-service), only registration
-   * and lookup. We use getByEmail to detect an existing account and register() otherwise.
-   */
-  getByEmail(email: string): Observable<Provider> {
-    return this.http.get<Provider>(`${this.base}/email/${encodeURIComponent(email)}`);
+  register(provider: Provider, password: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.base}/register`, { ...provider, password });
   }
 
-  register(provider: Provider): Observable<RegisterResponse> {
-    return this.http.post<RegisterResponse>(`${this.base}/register`, provider);
+  login(email: string, password: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.base}/login`, { email, password });
   }
 
   getById(providerId: number): Observable<Provider> {

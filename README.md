@@ -32,17 +32,16 @@ To enable the map, add a Google Maps JavaScript API key (with Maps + Geocoding e
 `googleMapsApiKey` in the environment files. Without a key the app runs normally but shows a
 placeholder instead of the map.
 
-## Authentication model (matches the backend as it exists today)
+## Authentication model
 
-- **Drivers** sign in with just name + email via `user-service`'s `/api/users/oauth/login`, which
-  upserts the account and returns a JWT. That JWT is attached as a `Bearer` token to subsequent requests.
-- **Providers** have no login/JWT endpoint yet in `provider-service` — only `register` and
-  lookup-by-email. The app "logs in" a provider by looking their email up (`GET /api/providers/email/{email}`);
-  a 404 routes them to registration instead. This means provider sessions aren't backed by a real token today.
-  **Known gap**: add an `oauth/login`-equivalent (and JWT issuance) to `provider-service`, mirroring
-  `user-service`, to close this out.
-- All four services currently `permitAll` every endpoint (see each `SecurityConfig`), so there's no
-  server-side enforcement yet beyond what's described above.
+- Both **drivers** and **providers** register and sign in with email + password (`/register` and
+  `/login` on `user-service` and `provider-service`). Passwords are BCrypt-hashed server-side and
+  never round-trip in API responses; a successful register or login returns a JWT + refresh token,
+  which the app attaches as a `Bearer` token to subsequent requests.
+- `user-service` additionally exposes the older `/oauth/login` upsert endpoint for a future real
+  OAuth (e.g. Google Sign-In) integration; the app doesn't use it today.
+- All four services currently `permitAll` every endpoint (see each `SecurityConfig`) — the JWT is
+  issued and attached, but not yet enforced server-side beyond the login/register checks themselves.
 
 ## "Availability"
 

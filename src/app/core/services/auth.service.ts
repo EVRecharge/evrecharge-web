@@ -1,6 +1,5 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { catchError, map, Observable, of, tap, throwError } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
+import { map, Observable } from 'rxjs';
 
 import { Session } from '../models/auth.model';
 import { User } from '../models/user.model';
@@ -21,9 +20,8 @@ export class AuthService {
   readonly isAuthenticated = computed(() => this._session() !== null);
   readonly role = computed(() => this._session()?.role ?? null);
 
-  /** Single-step login-or-register for users, backed by the OAuth upsert endpoint. */
-  continueAsUser(email: string, firstName: string, lastName: string): Observable<Session> {
-    return this.userService.continueWithEmail(email, firstName, lastName).pipe(
+  registerAsUser(user: User, password: string): Observable<Session> {
+    return this.userService.register(user, password).pipe(
       map((res) => this.persist({
         role: 'USER',
         token: res.token,
@@ -35,11 +33,12 @@ export class AuthService {
     );
   }
 
-  registerUser(user: User): Observable<Session> {
-    return this.userService.register(user).pipe(
+  loginAsUser(email: string, password: string): Observable<Session> {
+    return this.userService.login(email, password).pipe(
       map((res) => this.persist({
         role: 'USER',
         token: res.token,
+        refreshToken: res.refreshToken,
         profileId: res.user.userId!,
         email: res.user.email,
         displayName: `${res.user.firstName} ${res.user.lastName}`.trim(),
@@ -47,29 +46,25 @@ export class AuthService {
     );
   }
 
-  /**
-   * provider-service currently exposes no login endpoint (see ProviderService), so "login"
-   * here means "look the account up by email". A 404 signals the caller to route to registration.
-   */
-  findProviderAccount(email: string): Observable<Provider | null> {
-    return this.providerService.getByEmail(email).pipe(
-      catchError((err: HttpErrorResponse) => (err.status === 404 ? of(null) : throwError(() => err))),
+  registerAsProvider(provider: Provider, password: string): Observable<Session> {
+    return this.providerService.register(provider, password).pipe(
+      map((res) => this.persist({
+        role: 'PROVIDER',
+        token: res.token,
+        refreshToken: res.refreshToken,
+        profileId: res.provider.providerId!,
+        email: res.provider.email,
+        displayName: res.provider.companyName,
+      })),
     );
   }
 
-  continueAsProvider(provider: Provider): Session {
-    return this.persist({
-      role: 'PROVIDER',
-      profileId: provider.providerId!,
-      email: provider.email,
-      displayName: provider.companyName,
-    });
-  }
-
-  registerProvider(provider: Provider): Observable<Session> {
-    return this.providerService.register(provider).pipe(
+  loginAsProvider(email: string, password: string): Observable<Session> {
+    return this.providerService.login(email, password).pipe(
       map((res) => this.persist({
         role: 'PROVIDER',
+        token: res.token,
+        refreshToken: res.refreshToken,
         profileId: res.provider.providerId!,
         email: res.provider.email,
         displayName: res.provider.companyName,
