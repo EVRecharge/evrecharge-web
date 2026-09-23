@@ -1,0 +1,27 @@
+<mat-toolbar color="primary">
+  <span class="evr-brand">
+    <mat-icon>ev_station</mat-icon>
+    EVRecharge
+  </span>
+
+  @if (auth.role() === 'USER') {
+    <a mat-button routerLink="/user/find-charging" routerLinkActive="evr-active">Find Charging</a>
+    <a mat-button routerLink="/user/bookings" routerLinkActive="evr-active">My Bookings</a>
+    <a mat-button routerLink="/user/profile" routerLinkActive="evr-active">Profile</a>
+  }
+
+  @if (auth.role() === 'PROVIDER') {
+    <a mat-button routerLink="/provider/profile" routerLinkActive="evr-active">My Station</a>
+    <a mat-button routerLink="/provider/bookings" routerLinkActive="evr-active">Bookings</a>
+  }
+
+  <span class="evr-spacer"></span>
+
+  @if (auth.isAuthenticated()) {
+    <span class="evr-user">{{ auth.session()?.displayName }}</span>
+    <button mat-button (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      Logout
+    </button>
+  }
+</mat-toolbar>

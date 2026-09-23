@@ -1,0 +1,35 @@
+<div class="evr-container">
+  <h2>My bookings</h2>
+
+  @if (loading()) {
+    <div class="evr-loading"><mat-spinner diameter="32"></mat-spinner></div>
+  } @else if (error()) {
+    <div class="evr-error-banner">{{ error() }}</div>
+  } @else if (bookings().length === 0) {
+    <p class="evr-empty">You haven't booked any charging sessions yet.</p>
+  } @else {
+    <div class="evr-booking-list">
+      @for (booking of bookings(); track booking.bookingId) {
+        <mat-card class="evr-booking-card">
+          <div class="evr-booking-header">
+            <h3>{{ booking.providerName }}</h3>
+            <mat-chip [color]="statusColor(booking.status)" highlighted>{{ booking.status }}</mat-chip>
+          </div>
+          <p><mat-icon inline>schedule</mat-icon> {{ booking.startTime | date: 'medium' }} &rarr; {{ booking.endTime | date: 'shortTime' }}</p>
+          @if (booking.address) {
+            <p><mat-icon inline>place</mat-icon> {{ booking.address }}, {{ booking.city }}</p>
+          }
+          @if (booking.totalCost) {
+            <p><mat-icon inline>payments</mat-icon> {{ booking.totalCost | number: '1.2-2' }} $</p>
+          }
+          @if (booking.notes) {
+            <p class="evr-notes">"{{ booking.notes }}"</p>
+          }
+          @if (booking.status !== 'CANCELLED' && booking.status !== 'COMPLETED') {
+            <button mat-stroked-button color="warn" (click)="cancel(booking)">Cancel booking</button>
+          }
+        </mat-card>
+      }
+    </div>
+  }
+</div>

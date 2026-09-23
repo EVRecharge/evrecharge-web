@@ -1,0 +1,107 @@
+<div class="evr-container evr-find-page">
+  <h2>Find a charging station</h2>
+
+  <div class="evr-filters">
+    <mat-form-field appearance="outline" class="evr-city-filter">
+      <mat-label>Filter by city</mat-label>
+      <input matInput [ngModel]="cityFilter()" (ngModelChange)="cityFilter.set($event)" placeholder="e.g. Toronto" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="evr-sort">
+      <mat-label>Sort by</mat-label>
+      <mat-select [ngModel]="sortMode()" (ngModelChange)="sortMode.set($event)">
+        <mat-option value="distance">Nearest first</mat-option>
+        <mat-option value="rate">Lowest rate</mat-option>
+        <mat-option value="availability">Most availability</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-stroked-button (click)="locateMe()">
+      <mat-icon>my_location</mat-icon>
+      Use my location
+    </button>
+  </div>
+
+  <div class="evr-layout">
+    <div class="evr-map-panel">
+      @if (mapReady()) {
+        <google-map
+          [center]="mapCenter()"
+          [options]="mapOptions"
+          height="480px"
+          width="100%"
+        >
+          @if (userLocation(); as loc) {
+            <map-marker
+              [position]="loc"
+              [options]="{ icon: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png' }"
+            ></map-marker>
+          }
+
+          @for (provider of providers(); track provider.providerId) {
+            <map-marker
+              #marker="mapMarker"
+              [position]="{ lat: provider.latitude, lng: provider.longitude }"
+              (mapClick)="selectProvider(provider, info, marker)"
+            ></map-marker>
+          }
+
+          <map-info-window #info="mapInfoWindow">
+            @if (selectedProvider(); as p) {
+              <div class="evr-info-window">
+                <strong>{{ p.companyName }}</strong>
+                <div>{{ p.address }}, {{ p.city }}</div>
+                <div>{{ p.ratePerHour | number: '1.2-2' }} $/hr &middot; {{ p.chargerType }}</div>
+                <button mat-flat-button color="primary" (click)="book(p)">Book now</button>
+              </div>
+            }
+          </map-info-window>
+        </google-map>
+      } @else {
+        <div class="evr-map-placeholder">
+          <mat-icon>map</mat-icon>
+          @if (mapsConfigured) {
+            <p>Loading map&hellip;</p>
+          } @else {
+            <p>
+              Map preview is unavailable because no Google Maps API key is configured.<br />
+              Add one to <code>src/environments/environment.ts</code> (<code>googleMapsApiKey</code>) to enable it.
+            </p>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="evr-list-panel">
+      @if (loading()) {
+        <div class="evr-loading"><mat-spinner diameter="32"></mat-spinner></div>
+      } @else if (providers().length === 0) {
+        <p class="evr-empty">No charging providers match your filters yet.</p>
+      } @else {
+        @for (provider of providers(); track provider.providerId) {
+          <mat-card class="evr-provider-card">
+            <div class="evr-provider-header">
+              <h3>{{ provider.companyName }}</h3>
+              @if (provider.distanceKm !== undefined) {
+                <span class="evr-distance">{{ provider.distanceKm | number: '1.1-1' }} km</span>
+              }
+            </div>
+            <p class="evr-address">
+              <mat-icon inline>place</mat-icon>
+              {{ provider.address }}, {{ provider.city }}, {{ provider.state }} {{ provider.zipCode }}
+            </p>
+            <div class="evr-provider-meta">
+              <span><mat-icon inline>payments</mat-icon> {{ provider.ratePerHour | number: '1.2-2' }} $/hr</span>
+              <span><mat-icon inline>ev_station</mat-icon> {{ provider.chargerType || 'Standard charger' }}</span>
+              <span>
+                <mat-icon inline>bolt</mat-icon>
+                {{ provider.maxConcurrentCharges ?? 1 }} slot{{ (provider.maxConcurrentCharges ?? 1) === 1 ? '' : 's' }} available
+              </span>
+            </div>
+            <button mat-flat-button color="primary" (click)="book(provider)">Book charging</button>
+          </mat-card>
+        }
+      }
+    </div>
+  </div>
+</div>

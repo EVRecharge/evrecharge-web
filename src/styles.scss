@@ -1,0 +1,42 @@
+@use '@angular/material/prebuilt-themes/azure-blue.css';
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  background: #f4f6f8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.evr-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.evr-spacer {
+  flex: 1 1 auto;
+}
+
+.evr-form-field {
+  display: block;
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+.evr-error-banner {
+  background: #fdecea;
+  color: #b3261e;
+  border: 1px solid #f5c6c2;
+  border-radius: 4px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}

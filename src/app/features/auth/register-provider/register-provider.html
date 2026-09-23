@@ -1,0 +1,142 @@
+<div class="evr-register-page">
+  <mat-card class="evr-register-card">
+    <div class="evr-brand-row">
+      <mat-icon class="evr-logo">ev_station</mat-icon>
+      <h1>Register your charging station</h1>
+    </div>
+
+    @if (error()) {
+      <div class="evr-error-banner">{{ error() }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="evr-form">
+      <div class="evr-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Company name</mat-label>
+          <input matInput formControlName="companyName" required />
+          @if (form.controls.companyName.invalid && form.controls.companyName.touched) {
+            <mat-error>Company name is required.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Contact person</mat-label>
+          <input matInput formControlName="contactPersonName" required />
+          @if (form.controls.contactPersonName.invalid && form.controls.contactPersonName.touched) {
+            <mat-error>Contact person is required.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" required />
+          @if (form.controls.email.invalid && form.controls.email.touched) {
+            <mat-error>Enter a valid email address.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Phone number</mat-label>
+          <input matInput formControlName="phoneNumber" required />
+          @if (form.controls.phoneNumber.invalid && form.controls.phoneNumber.touched) {
+            <mat-error>Enter a valid phone number.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="evr-span-2">
+          <mat-label>Street address</mat-label>
+          <input matInput formControlName="address" required />
+          @if (form.controls.address.invalid && form.controls.address.touched) {
+            <mat-error>Address is required.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>City</mat-label>
+          <input matInput formControlName="city" required />
+          @if (form.controls.city.invalid && form.controls.city.touched) {
+            <mat-error>City is required.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>State</mat-label>
+          <input matInput formControlName="state" required />
+          @if (form.controls.state.invalid && form.controls.state.touched) {
+            <mat-error>State is required.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Zip code</mat-label>
+          <input matInput formControlName="zipCode" required />
+          @if (form.controls.zipCode.invalid && form.controls.zipCode.touched) {
+            <mat-error>Zip code is required.</mat-error>
+          }
+        </mat-form-field>
+
+        <div class="evr-span-2 evr-location-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Latitude</mat-label>
+            <input matInput type="number" step="0.000001" formControlName="latitude" required />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Longitude</mat-label>
+            <input matInput type="number" step="0.000001" formControlName="longitude" required />
+          </mat-form-field>
+
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="useCurrentLocation()"
+            [disabled]="locating()"
+            class="evr-locate-btn"
+          >
+            <mat-icon>my_location</mat-icon>
+            @if (locating()) { Locating&hellip; } @else { Use current location }
+          </button>
+        </div>
+        @if ((form.controls.latitude.invalid || form.controls.longitude.invalid) &&
+             (form.controls.latitude.touched || form.controls.longitude.touched)) {
+          <div class="evr-span-2"><mat-error>Set your station's coordinates so drivers can find you on the map.</mat-error></div>
+        }
+
+        <mat-form-field appearance="outline">
+          <mat-label>Rate per hour ($)</mat-label>
+          <input matInput type="number" step="0.01" min="0.01" formControlName="ratePerHour" required />
+          @if (form.controls.ratePerHour.invalid && form.controls.ratePerHour.touched) {
+            <mat-error>Enter a rate greater than 0.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Charger type</mat-label>
+          <mat-select formControlName="chargerType">
+            @for (type of chargerTypes; track type) {
+              <mat-option [value]="type">{{ type }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Available charging slots</mat-label>
+          <input matInput type="number" min="1" formControlName="maxConcurrentCharges" required />
+          @if (form.controls.maxConcurrentCharges.invalid && form.controls.maxConcurrentCharges.touched) {
+            <mat-error>Enter at least 1 slot.</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <button mat-flat-button color="primary" type="submit" class="evr-submit" [disabled]="loading()">
+        @if (loading()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          Register station
+        }
+      </button>
+
+      <p class="evr-hint">Already registered? <a routerLink="/login">Back to login</a></p>
+    </form>
+  </mat-card>
+</div>

@@ -1,0 +1,69 @@
+<div class="evr-container evr-book-page">
+  <a routerLink="/user/find-charging" class="evr-back">
+    <mat-icon>arrow_back</mat-icon> Back to search
+  </a>
+
+  @if (loadingProvider()) {
+    <div class="evr-loading"><mat-spinner diameter="32"></mat-spinner></div>
+  } @else if (provider(); as p) {
+    <div class="evr-book-layout">
+      <mat-card class="evr-provider-summary">
+        <h2>{{ p.companyName }}</h2>
+        <p class="evr-address"><mat-icon inline>place</mat-icon> {{ p.address }}, {{ p.city }}, {{ p.state }}</p>
+        <p><mat-icon inline>payments</mat-icon> {{ p.ratePerHour | number: '1.2-2' }} $ / hour</p>
+        <p><mat-icon inline>ev_station</mat-icon> {{ p.chargerType || 'Standard charger' }}</p>
+        <p><mat-icon inline>bolt</mat-icon> {{ p.maxConcurrentCharges ?? 1 }} slots available</p>
+      </mat-card>
+
+      <mat-card class="evr-book-form-card">
+        <h3>Schedule your charge</h3>
+
+        @if (error()) {
+          <div class="evr-error-banner">{{ error() }}</div>
+        }
+        @if (success()) {
+          <div class="evr-success-banner">Booking confirmed! Redirecting to your bookings&hellip;</div>
+        }
+
+        <form [formGroup]="form" (ngSubmit)="submit()">
+          <mat-form-field appearance="outline" class="evr-form-field">
+            <mat-label>Date</mat-label>
+            <input matInput type="date" formControlName="date" required />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="evr-form-field">
+            <mat-label>Start time</mat-label>
+            <input matInput type="time" formControlName="startTime" required />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="evr-form-field">
+            <mat-label>Duration (hours)</mat-label>
+            <input matInput type="number" min="1" max="12" formControlName="durationInHours" required />
+            @if (form.controls.durationInHours.invalid && form.controls.durationInHours.touched) {
+              <mat-error>Choose between 1 and 12 hours.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="evr-form-field">
+            <mat-label>Notes (optional)</mat-label>
+            <textarea matInput formControlName="notes" rows="2"></textarea>
+          </mat-form-field>
+
+          <div class="evr-cost-preview">
+            Estimated cost: <strong>{{ estimatedCost() | number: '1.2-2' }} $</strong>
+          </div>
+
+          <button mat-flat-button color="primary" type="submit" class="evr-submit" [disabled]="submitting()">
+            @if (submitting()) {
+              <mat-spinner diameter="20"></mat-spinner>
+            } @else {
+              Confirm booking
+            }
+          </button>
+        </form>
+      </mat-card>
+    </div>
+  } @else {
+    <div class="evr-error-banner">{{ error() }}</div>
+  }
+</div>

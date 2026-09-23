@@ -1,0 +1,64 @@
+<div class="evr-container evr-profile-page">
+  <h2>My profile</h2>
+
+  @if (loading()) {
+    <div class="evr-loading"><mat-spinner diameter="32"></mat-spinner></div>
+  } @else {
+    <mat-card class="evr-profile-card">
+      @if (error()) {
+        <div class="evr-error-banner">{{ error() }}</div>
+      }
+      @if (saved()) {
+        <div class="evr-success-banner">Profile updated.</div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="evr-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Phone number</mat-label>
+          <input matInput formControlName="phoneNumber" required />
+          @if (form.controls.phoneNumber.invalid && form.controls.phoneNumber.touched) {
+            <mat-error>Enter a valid phone number.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Vehicle type</mat-label>
+          <input matInput formControlName="vehicleType" placeholder="e.g. Tesla Model 3" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="evr-span-2">
+          <mat-label>Street address</mat-label>
+          <input matInput formControlName="address" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>City</mat-label>
+          <input matInput formControlName="city" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>State</mat-label>
+          <input matInput formControlName="state" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Zip code</mat-label>
+          <input matInput formControlName="zipCode" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Vehicle plate number</mat-label>
+          <input matInput formControlName="vehicleNumber" />
+        </mat-form-field>
+
+        <button mat-flat-button color="primary" type="submit" class="evr-submit evr-span-2" [disabled]="saving()">
+          @if (saving()) {
+            <mat-spinner diameter="20"></mat-spinner>
+          } @else {
+            Save profile
+          }
+        </button>
+      </form>
+    </mat-card>
+  }
+</div>

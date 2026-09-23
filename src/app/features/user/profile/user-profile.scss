@@ -1,0 +1,43 @@
+.evr-loading {
+  display: flex;
+  justify-content: center;
+  padding: 60px 0;
+}
+
+.evr-profile-card {
+  padding: 16px;
+  max-width: 640px;
+}
+
+.evr-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 16px;
+
+  @media (max-width: 560px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.evr-span-2 {
+  grid-column: span 2;
+
+  @media (max-width: 560px) {
+    grid-column: span 1;
+  }
+}
+
+.evr-submit {
+  height: 44px;
+  margin-top: 8px;
+}
+
+.evr-success-banner {
+  background: #e6f4ea;
+  color: #1e7e34;
+  border: 1px solid #b7dfc0;
+  border-radius: 4px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}

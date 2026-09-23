@@ -1,0 +1,129 @@
+.evr-find-page h2 {
+  margin-bottom: 16px;
+}
+
+.evr-filters {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+
+  button {
+    height: 56px;
+  }
+}
+
+.evr-city-filter {
+  width: 220px;
+}
+
+.evr-sort {
+  width: 200px;
+}
+
+.evr-layout {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 20px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.evr-map-panel {
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.evr-map-placeholder {
+  height: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #5f6368;
+  text-align: center;
+  padding: 24px;
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.evr-info-window {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 180px;
+
+  button {
+    margin-top: 8px;
+  }
+}
+
+.evr-list-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 520px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.evr-loading,
+.evr-empty {
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+  color: #5f6368;
+}
+
+.evr-provider-card {
+  padding: 4px 4px 12px;
+}
+
+.evr-provider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+
+  h3 {
+    margin: 8px 0 4px;
+  }
+}
+
+.evr-distance {
+  font-size: 13px;
+  color: #1565c0;
+  font-weight: 600;
+}
+
+.evr-address {
+  font-size: 13px;
+  color: #5f6368;
+  margin: 0 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.evr-provider-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 13px;
+  margin-bottom: 12px;
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+}

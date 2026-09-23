@@ -1,0 +1,76 @@
+<div class="evr-login-page">
+  <mat-card class="evr-login-card">
+    <div class="evr-brand-row">
+      <mat-icon class="evr-logo">ev_station</mat-icon>
+      <h1>EVRecharge</h1>
+    </div>
+    <p class="evr-subtitle">Find, book, and manage EV charging &mdash; for drivers and charging providers.</p>
+
+    @if (error()) {
+      <div class="evr-error-banner">{{ error() }}</div>
+    }
+
+    <mat-tab-group animationDuration="150ms" mat-stretch-tabs="true">
+      <mat-tab label="I'm a Driver">
+        <form [formGroup]="userForm" (ngSubmit)="submitUser()" class="evr-tab-form">
+          <mat-form-field appearance="outline" class="evr-form-field">
+            <mat-label>First name</mat-label>
+            <input matInput formControlName="firstName" required />
+            @if (userForm.controls.firstName.invalid && userForm.controls.firstName.touched) {
+              <mat-error>First name must be at least 2 characters.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="evr-form-field">
+            <mat-label>Last name</mat-label>
+            <input matInput formControlName="lastName" required />
+            @if (userForm.controls.lastName.invalid && userForm.controls.lastName.touched) {
+              <mat-error>Last name must be at least 2 characters.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="evr-form-field">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" formControlName="email" required />
+            @if (userForm.controls.email.invalid && userForm.controls.email.touched) {
+              <mat-error>Enter a valid email address.</mat-error>
+            }
+          </mat-form-field>
+
+          <button mat-flat-button color="primary" type="submit" class="evr-submit" [disabled]="loading()">
+            @if (loading()) {
+              <mat-spinner diameter="20"></mat-spinner>
+            } @else {
+              Continue as Driver
+            }
+          </button>
+        </form>
+      </mat-tab>
+
+      <mat-tab label="I'm a Provider">
+        <form [formGroup]="providerForm" (ngSubmit)="submitProvider()" class="evr-tab-form">
+          <mat-form-field appearance="outline" class="evr-form-field">
+            <mat-label>Business email</mat-label>
+            <input matInput type="email" formControlName="email" required />
+            @if (providerForm.controls.email.invalid && providerForm.controls.email.touched) {
+              <mat-error>Enter a valid email address.</mat-error>
+            }
+          </mat-form-field>
+
+          <button mat-flat-button color="primary" type="submit" class="evr-submit" [disabled]="loading()">
+            @if (loading()) {
+              <mat-spinner diameter="20"></mat-spinner>
+            } @else {
+              Continue as Provider
+            }
+          </button>
+
+          <p class="evr-hint">
+            New charging station?
+            <a routerLink="/register/provider">Register your station</a>
+          </p>
+        </form>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-card>
+</div>
