@@ -1,33 +1,43 @@
 <div class="evr-home">
-  <!-- ============ HEADER ============ -->
-  <header class="evr-header">
-    <div class="evr-header-inner">
-      <div class="evr-brand">
-        <mat-icon>ev_station</mat-icon>
-        <span>EVRecharge <em>India</em></span>
-      </div>
-      <nav class="evr-nav">
-        <a href="#how-it-works">How it works</a>
-        <a href="#cities">Cities</a>
-        <a href="#partners">For Partners</a>
-      </nav>
-      <div class="evr-header-actions">
-        <a routerLink="/login" mat-stroked-button>Log in</a>
-        <a routerLink="/register/driver" mat-flat-button color="primary">Sign up free</a>
-      </div>
-    </div>
-  </header>
+  <!-- ============ HEADER + HERO (unified dark panel) ============ -->
+  <section class="evr-hero-dark">
+    <div class="evr-hero-glow" aria-hidden="true"></div>
 
-  <!-- ============ HERO ============ -->
-  <section class="evr-hero">
+    <header class="evr-header">
+      <div class="evr-header-inner">
+        <div class="evr-brand-block">
+          <div class="evr-brand">
+            <mat-icon>ev_station</mat-icon>
+            <span>EVRecharge <em>India</em></span>
+          </div>
+          <span class="evr-brand-tagline">Enterprise EV charging network</span>
+        </div>
+        <nav class="evr-nav">
+          <a href="#how-it-works">How it works</a>
+          <a href="#cities">Cities</a>
+          <a href="#partners">For Partners</a>
+        </nav>
+        <div class="evr-header-actions">
+          <span class="evr-network-status">
+            <span class="evr-status-dot"></span>
+            Network online
+          </span>
+          <a routerLink="/login" mat-stroked-button class="evr-login-link">Log in</a>
+          <a routerLink="/register/driver" mat-flat-button color="primary">Sign up free</a>
+        </div>
+      </div>
+    </header>
+
     <div class="evr-hero-inner">
       <div class="evr-hero-copy">
-        <span class="evr-eyebrow">India's EV charging network</span>
-        <h1>Charge anywhere, from Mumbai to Manali.</h1>
-        <p>
-          Find verified charging stations near you, book a slot in seconds, and pay in rupees &mdash;
-          no more range anxiety on your next drive.
-        </p>
+        <h1>Find a charger.<br /><span class="evr-headline-accent">Start charging.</span></h1>
+        <p>Enterprise-grade EV charging, from Mumbai to Manali &mdash; discovery to departure.</p>
+
+        <div class="evr-scan" role="status" aria-live="polite">
+          <span class="evr-scan-track"><span class="evr-scan-bar"></span></span>
+          <span class="evr-scan-label">Locating nearest compatible station&hellip;</span>
+        </div>
+
         <div class="evr-hero-actions">
           <a routerLink="/register/driver" mat-flat-button color="primary" class="evr-cta">
             <mat-icon>bolt</mat-icon>
@@ -44,50 +54,72 @@
         </div>
       </div>
 
-      <div class="evr-hero-art" aria-hidden="true">
-        <svg viewBox="0 0 520 420" xmlns="http://www.w3.org/2000/svg">
+      <div class="evr-hero-art">
+        <svg viewBox="0 0 420 360" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="evr-kiosk-art">
           <defs>
-            <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#eaf7f0" />
-              <stop offset="100%" stop-color="#f5f8f6" />
-            </linearGradient>
+            <radialGradient id="kioskGlow" cx="50%" cy="45%" r="60%">
+              <stop offset="0%" stop-color="#1fd8a4" stop-opacity="0.35" />
+              <stop offset="100%" stop-color="#1fd8a4" stop-opacity="0" />
+            </radialGradient>
           </defs>
-          <rect x="0" y="0" width="520" height="420" rx="24" fill="url(#skyGrad)" />
+          <circle cx="210" cy="170" r="170" fill="url(#kioskGlow)" />
 
-          <!-- sun -->
-          <circle cx="440" cy="70" r="34" fill="#ffe0b2" />
+          <!-- kiosk body -->
+          <rect x="150" y="110" width="120" height="180" rx="18" fill="#0f1b22" stroke="#1fd8a4" stroke-width="2" />
+          <rect x="168" y="130" width="84" height="56" rx="8" fill="#132832" />
+          <text x="210" y="164" text-anchor="middle" font-family="Inter, sans-serif" font-weight="700" font-size="20" fill="#1fd8a4">EV</text>
 
-          <!-- ground -->
-          <rect x="0" y="330" width="520" height="90" fill="#dbeee2" />
-          <rect x="0" y="330" width="520" height="6" fill="#b6f0d2" />
+          <!-- status LEDs -->
+          <circle cx="182" cy="204" r="4" fill="#1fd8a4" />
+          <circle cx="198" cy="204" r="4" fill="#1fd8a4" opacity="0.5" />
+          <circle cx="214" cy="204" r="4" fill="#1fd8a4" opacity="0.5" />
 
-          <!-- charging pillar -->
-          <rect x="330" y="210" width="46" height="130" rx="8" fill="#0b6e4f" />
-          <rect x="338" y="222" width="30" height="46" rx="4" fill="#ffffff" opacity="0.9" />
-          <path d="M348 228 L360 244 L352 244 L358 260 L344 240 L352 240 Z" fill="#ff7a00" />
-          <circle cx="353" cy="205" r="10" fill="#0b6e4f" />
+          <!-- cable -->
+          <path d="M150 250 C110 262, 80 280, 55 300" stroke="#1fd8a4" stroke-width="6" fill="none" stroke-linecap="round" />
+          <circle cx="55" cy="300" r="10" fill="#0f1b22" stroke="#1fd8a4" stroke-width="2" />
 
-          <!-- charging cable -->
-          <path d="M330 260 C300 270, 280 280, 262 288" stroke="#0b6e4f" stroke-width="6" fill="none" stroke-linecap="round" />
-
-          <!-- car body -->
-          <g>
-            <rect x="90" y="255" width="180" height="60" rx="18" fill="#12915f" />
-            <path d="M120 255 L150 215 L225 215 L248 255 Z" fill="#12915f" />
-            <path d="M132 250 L155 222 L212 222 L226 250 Z" fill="#eaf7f0" />
-            <circle cx="135" cy="318" r="20" fill="#10241d" />
-            <circle cx="135" cy="318" r="9" fill="#dde6e1" />
-            <circle cx="235" cy="318" r="20" fill="#10241d" />
-            <circle cx="235" cy="318" r="9" fill="#dde6e1" />
-            <rect x="255" y="284" width="14" height="8" rx="3" fill="#ff7a00" />
-          </g>
-
-          <!-- leaf accents -->
-          <path d="M60 300 C50 280 65 260 90 262 C85 285 78 300 60 300 Z" fill="#b6f0d2" />
-          <path d="M470 340 C460 320 475 300 500 302 C495 325 488 340 470 340 Z" fill="#b6f0d2" />
+          <!-- connector base -->
+          <rect x="176" y="290" width="68" height="14" rx="7" fill="#0f1b22" stroke="#1fd8a4" stroke-width="2" />
         </svg>
+
+        <mat-card class="evr-quick-login">
+          <div class="evr-quick-login-tabs">
+            <button type="button" [class.evr-tab-active]="quickRole() === 'USER'" (click)="setQuickRole('USER')">
+              Driver
+            </button>
+            <button type="button" [class.evr-tab-active]="quickRole() === 'PROVIDER'" (click)="setQuickRole('PROVIDER')">
+              Provider
+            </button>
+          </div>
+
+          <form [formGroup]="quickForm" (ngSubmit)="quickLogin()" class="evr-quick-form">
+            <mat-form-field appearance="outline" class="evr-form-field">
+              <mat-label>Email</mat-label>
+              <input matInput type="email" formControlName="email" autocomplete="email" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="evr-form-field">
+              <mat-label>Password</mat-label>
+              <input matInput type="password" formControlName="password" autocomplete="current-password" />
+            </mat-form-field>
+
+            @if (quickError()) {
+              <div class="evr-quick-error">{{ quickError() }}</div>
+            }
+
+            <button mat-flat-button color="primary" type="submit" class="evr-quick-submit" [disabled]="quickLoading()">
+              @if (quickLoading()) {
+                <mat-spinner diameter="18"></mat-spinner>
+              } @else {
+                Log in
+              }
+            </button>
+          </form>
+          <p class="evr-quick-hint">New here? <a routerLink="/register/driver">Create an account</a></p>
+        </mat-card>
       </div>
     </div>
+
+    <div class="evr-hero-road" aria-hidden="true"></div>
   </section>
 
   <!-- ============ STATS ============ -->
