@@ -1,5 +1,11 @@
 <div class="evr-container evr-provider-profile-page">
-  <h2>My charging station</h2>
+  <div class="evr-page-header">
+    <span class="evr-page-icon"><mat-icon>storefront</mat-icon></span>
+    <div>
+      <h2>My charging station</h2>
+      <p>Keep your station details accurate so drivers can find and book you.</p>
+    </div>
+  </div>
 
   @if (loading()) {
     <div class="evr-loading"><mat-spinner diameter="32"></mat-spinner></div>
@@ -32,7 +38,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Rate per hour ($)</mat-label>
+          <mat-label>Rate per hour (&#8377;)</mat-label>
           <input matInput type="number" step="0.01" min="0.01" formControlName="ratePerHour" required />
         </mat-form-field>
 
@@ -52,7 +58,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Zip code</mat-label>
+          <mat-label>PIN code</mat-label>
           <input matInput formControlName="zipCode" required />
         </mat-form-field>
 

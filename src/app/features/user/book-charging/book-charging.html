@@ -10,7 +10,7 @@
       <mat-card class="evr-provider-summary">
         <h2>{{ p.companyName }}</h2>
         <p class="evr-address"><mat-icon inline>place</mat-icon> {{ p.address }}, {{ p.city }}, {{ p.state }}</p>
-        <p><mat-icon inline>payments</mat-icon> {{ p.ratePerHour | number: '1.2-2' }} $ / hour</p>
+        <p><mat-icon inline>currency_rupee</mat-icon> {{ p.ratePerHour | number: '1.2-2' }} / hour</p>
         <p><mat-icon inline>ev_station</mat-icon> {{ p.chargerType || 'Standard charger' }}</p>
         <p><mat-icon inline>bolt</mat-icon> {{ p.maxConcurrentCharges ?? 1 }} slots available</p>
       </mat-card>
@@ -50,7 +50,7 @@
           </mat-form-field>
 
           <div class="evr-cost-preview">
-            Estimated cost: <strong>{{ estimatedCost() | number: '1.2-2' }} $</strong>
+            Estimated cost: <strong>&#8377;{{ estimatedCost() | number: '1.2-2' }}</strong>
           </div>
 
           <button mat-flat-button color="primary" type="submit" class="evr-submit" [disabled]="submitting()">

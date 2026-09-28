@@ -1,8 +1,8 @@
 <mat-toolbar color="primary">
-  <span class="evr-brand">
+  <a routerLink="/" class="evr-brand">
     <mat-icon>ev_station</mat-icon>
-    EVRecharge
-  </span>
+    EVRecharge India
+  </a>
 
   @if (auth.role() === 'USER') {
     <a mat-button routerLink="/user/find-charging" routerLinkActive="evr-active">Find Charging</a>

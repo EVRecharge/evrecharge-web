@@ -1,5 +1,11 @@
 <div class="evr-container">
-  <h2>Bookings</h2>
+  <div class="evr-page-header">
+    <span class="evr-page-icon"><mat-icon>fact_check</mat-icon></span>
+    <div>
+      <h2>Bookings</h2>
+      <p>Confirm, start, and complete charging sessions for your station.</p>
+    </div>
+  </div>
 
   @if (loading()) {
     <div class="evr-loading"><mat-spinner diameter="32"></mat-spinner></div>
@@ -20,7 +26,7 @@
             <p><mat-icon inline>call</mat-icon> {{ booking.driverPhone }}</p>
           }
           @if (booking.totalCost) {
-            <p><mat-icon inline>payments</mat-icon> {{ booking.totalCost | number: '1.2-2' }} $</p>
+            <p><mat-icon inline>currency_rupee</mat-icon> {{ booking.totalCost | number: '1.2-2' }}</p>
           }
           @if (booking.notes) {
             <p class="evr-notes">"{{ booking.notes }}"</p>

@@ -1,5 +1,11 @@
 <div class="evr-container evr-profile-page">
-  <h2>My profile</h2>
+  <div class="evr-page-header">
+    <span class="evr-page-icon"><mat-icon>person</mat-icon></span>
+    <div>
+      <h2>My profile</h2>
+      <p>Your vehicle and contact details, used to speed up booking.</p>
+    </div>
+  </div>
 
   @if (loading()) {
     <div class="evr-loading"><mat-spinner diameter="32"></mat-spinner></div>
@@ -15,7 +21,7 @@
       <form [formGroup]="form" (ngSubmit)="submit()" class="evr-grid">
         <mat-form-field appearance="outline">
           <mat-label>Phone number</mat-label>
-          <input matInput formControlName="phoneNumber" required />
+          <input matInput formControlName="phoneNumber" placeholder="+91 98765 43210" required />
           @if (form.controls.phoneNumber.invalid && form.controls.phoneNumber.touched) {
             <mat-error>Enter a valid phone number.</mat-error>
           }
@@ -23,7 +29,7 @@
 
         <mat-form-field appearance="outline">
           <mat-label>Vehicle type</mat-label>
-          <input matInput formControlName="vehicleType" placeholder="e.g. Tesla Model 3" />
+          <input matInput formControlName="vehicleType" placeholder="e.g. Tata Nexon EV" />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="evr-span-2">
@@ -33,22 +39,22 @@
 
         <mat-form-field appearance="outline">
           <mat-label>City</mat-label>
-          <input matInput formControlName="city" />
+          <input matInput formControlName="city" placeholder="e.g. Mumbai" />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>State</mat-label>
-          <input matInput formControlName="state" />
+          <input matInput formControlName="state" placeholder="e.g. Maharashtra" />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Zip code</mat-label>
-          <input matInput formControlName="zipCode" />
+          <mat-label>PIN code</mat-label>
+          <input matInput formControlName="zipCode" placeholder="e.g. 400069" />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Vehicle plate number</mat-label>
-          <input matInput formControlName="vehicleNumber" />
+          <input matInput formControlName="vehicleNumber" placeholder="e.g. MH12AB1234" />
         </mat-form-field>
 
         <button mat-flat-button color="primary" type="submit" class="evr-submit evr-span-2" [disabled]="saving()">

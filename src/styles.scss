@@ -1,5 +1,32 @@
 @use '@angular/material/prebuilt-themes/azure-blue.css';
 
+// ---------------------------------------------------------------------------
+// EVRecharge India brand palette -- overrides the Material 3 system tokens the
+// prebuilt theme sets, so every Material component (buttons, inputs, tabs...)
+// picks up the brand colors without needing a hand-rolled M3 theme build.
+// ---------------------------------------------------------------------------
+:root {
+  --evr-primary: #0b6e4f;
+  --evr-primary-dark: #094f39;
+  --evr-primary-light: #12915f;
+  --evr-accent: #ff7a00;
+  --evr-accent-dark: #e56800;
+  --evr-ink: #10241d;
+  --evr-muted: #5b6b64;
+  --evr-surface: #f5f8f6;
+  --evr-border: #dde6e1;
+}
+
+html {
+  --mat-sys-primary: var(--evr-primary);
+  --mat-sys-on-primary: #ffffff;
+  --mat-sys-primary-container: #b6f0d2;
+  --mat-sys-on-primary-container: var(--evr-primary-dark);
+  --mat-sys-secondary: var(--evr-accent);
+  --mat-sys-on-secondary: #ffffff;
+  --mat-sys-surface-tint: var(--evr-primary);
+}
+
 html,
 body {
   height: 100%;
@@ -7,8 +34,9 @@ body {
 }
 
 body {
-  font-family: Roboto, 'Helvetica Neue', sans-serif;
-  background: #f4f6f8;
+  font-family: 'Inter', Roboto, 'Helvetica Neue', sans-serif;
+  background: var(--evr-surface);
+  color: var(--evr-ink);
 }
 
 * {
@@ -39,4 +67,70 @@ body {
   padding: 10px 14px;
   margin-bottom: 16px;
   font-size: 14px;
+}
+
+.evr-success-banner {
+  background: #e3f6ec;
+  color: #0b6e4f;
+  border: 1px solid #b6f0d2;
+  border-radius: 4px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+// ---------------------------------------------------------------------------
+// Shared card + page-header treatment so every app screen reads as part of the
+// same product as the marketing homepage, not a bolt-on admin console.
+// ---------------------------------------------------------------------------
+mat-card.mat-mdc-card {
+  border-radius: 16px !important;
+  border: 1px solid var(--evr-border);
+  box-shadow: 0 1px 2px rgba(16, 36, 29, 0.06) !important;
+}
+
+.evr-provider-card,
+.evr-booking-card {
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+
+  &:hover {
+    box-shadow: 0 6px 20px rgba(16, 36, 29, 0.1) !important;
+    transform: translateY(-1px);
+  }
+}
+
+.evr-page-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 20px;
+
+  .evr-page-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    flex: none;
+    border-radius: 12px;
+    background: #e3f6ec;
+    color: var(--evr-primary);
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--evr-ink);
+  }
+
+  p {
+    margin: 4px 0 0;
+    font-size: 14px;
+    color: var(--evr-muted);
+  }
+}
+
+.evr-container h3 {
+  color: var(--evr-ink);
 }

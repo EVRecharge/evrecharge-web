@@ -37,7 +37,7 @@
 
         <mat-form-field appearance="outline">
           <mat-label>Phone number</mat-label>
-          <input matInput formControlName="phoneNumber" required />
+          <input matInput formControlName="phoneNumber" placeholder="+91 98765 43210" required />
           @if (form.controls.phoneNumber.invalid && form.controls.phoneNumber.touched) {
             <mat-error>Enter a valid phone number.</mat-error>
           }

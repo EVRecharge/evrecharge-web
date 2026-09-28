@@ -1,10 +1,16 @@
 <div class="evr-container evr-find-page">
-  <h2>Find a charging station</h2>
+  <div class="evr-page-header">
+    <span class="evr-page-icon"><mat-icon>search</mat-icon></span>
+    <div>
+      <h2>Find a charging station</h2>
+      <p>Verified charging partners across India, sorted by distance, rate, or availability.</p>
+    </div>
+  </div>
 
   <div class="evr-filters">
     <mat-form-field appearance="outline" class="evr-city-filter">
       <mat-label>Filter by city</mat-label>
-      <input matInput [ngModel]="cityFilter()" (ngModelChange)="cityFilter.set($event)" placeholder="e.g. Toronto" />
+      <input matInput [ngModel]="cityFilter()" (ngModelChange)="cityFilter.set($event)" placeholder="e.g. Mumbai" />
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="evr-sort">
@@ -51,7 +57,7 @@
               <div class="evr-info-window">
                 <strong>{{ p.companyName }}</strong>
                 <div>{{ p.address }}, {{ p.city }}</div>
-                <div>{{ p.ratePerHour | number: '1.2-2' }} $/hr &middot; {{ p.chargerType }}</div>
+                <div>&#8377;{{ p.ratePerHour | number: '1.2-2' }}/hr &middot; {{ p.chargerType }}</div>
                 <button mat-flat-button color="primary" (click)="book(p)">Book now</button>
               </div>
             }
@@ -91,7 +97,7 @@
               {{ provider.address }}, {{ provider.city }}, {{ provider.state }} {{ provider.zipCode }}
             </p>
             <div class="evr-provider-meta">
-              <span><mat-icon inline>payments</mat-icon> {{ provider.ratePerHour | number: '1.2-2' }} $/hr</span>
+              <span><mat-icon inline>currency_rupee</mat-icon> {{ provider.ratePerHour | number: '1.2-2' }}/hr</span>
               <span><mat-icon inline>ev_station</mat-icon> {{ provider.chargerType || 'Standard charger' }}</span>
               <span>
                 <mat-icon inline>bolt</mat-icon>

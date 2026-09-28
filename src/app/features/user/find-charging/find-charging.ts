@@ -51,8 +51,9 @@ export class FindCharging implements OnInit {
   readonly sortMode = signal<SortMode>('distance');
   readonly selectedProvider = signal<Provider | null>(null);
 
+  // Default view centers on Mumbai until we know the driver's actual location.
   readonly mapCenter = computed<google.maps.LatLngLiteral>(
-    () => this.userLocation() ?? { lat: 43.6532, lng: -79.3832 },
+    () => this.userLocation() ?? { lat: 19.076, lng: 72.8777 },
   );
   readonly mapOptions: google.maps.MapOptions = { zoom: 12, mapTypeControl: false, streetViewControl: false };
 

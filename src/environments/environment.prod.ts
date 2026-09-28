@@ -10,5 +10,5 @@ export const environment = {
     location: '/api/locations',
   },
   // Replace with a real key from https://console.cloud.google.com/google/maps-apis
-  googleMapsApiKey: '',
+  googleMapsApiKey: 'AIzaSyC_d2XJrs7UlPHyN-iyUo95ksWK6oHkY4Y',
 };

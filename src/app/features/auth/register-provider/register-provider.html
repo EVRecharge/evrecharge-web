@@ -37,7 +37,7 @@
 
         <mat-form-field appearance="outline">
           <mat-label>Phone number</mat-label>
-          <input matInput formControlName="phoneNumber" required />
+          <input matInput formControlName="phoneNumber" placeholder="+91 98765 43210" required />
           @if (form.controls.phoneNumber.invalid && form.controls.phoneNumber.touched) {
             <mat-error>Enter a valid phone number.</mat-error>
           }
@@ -93,7 +93,7 @@
 
         <mat-form-field appearance="outline" class="evr-span-2">
           <mat-label>Street address</mat-label>
-          <input matInput formControlName="address" required />
+          <input matInput formControlName="address" placeholder="e.g. Plot 14, Andheri East" required />
           @if (form.controls.address.invalid && form.controls.address.touched) {
             <mat-error>Address is required.</mat-error>
           }
@@ -101,7 +101,7 @@
 
         <mat-form-field appearance="outline">
           <mat-label>City</mat-label>
-          <input matInput formControlName="city" required />
+          <input matInput formControlName="city" placeholder="e.g. Mumbai" required />
           @if (form.controls.city.invalid && form.controls.city.touched) {
             <mat-error>City is required.</mat-error>
           }
@@ -109,17 +109,17 @@
 
         <mat-form-field appearance="outline">
           <mat-label>State</mat-label>
-          <input matInput formControlName="state" required />
+          <input matInput formControlName="state" placeholder="e.g. Maharashtra" required />
           @if (form.controls.state.invalid && form.controls.state.touched) {
             <mat-error>State is required.</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Zip code</mat-label>
-          <input matInput formControlName="zipCode" required />
+          <mat-label>PIN code</mat-label>
+          <input matInput formControlName="zipCode" placeholder="e.g. 400069" required />
           @if (form.controls.zipCode.invalid && form.controls.zipCode.touched) {
-            <mat-error>Zip code is required.</mat-error>
+            <mat-error>PIN code is required.</mat-error>
           }
         </mat-form-field>
 
@@ -151,7 +151,7 @@
         }
 
         <mat-form-field appearance="outline">
-          <mat-label>Rate per hour ($)</mat-label>
+          <mat-label>Rate per hour (&#8377;)</mat-label>
           <input matInput type="number" step="0.01" min="0.01" formControlName="ratePerHour" required />
           @if (form.controls.ratePerHour.invalid && form.controls.ratePerHour.touched) {
             <mat-error>Enter a rate greater than 0.</mat-error>
