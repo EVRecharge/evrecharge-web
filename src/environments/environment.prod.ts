@@ -1,10 +1,13 @@
 export const environment = {
   production: true,
+  // Relative — nginx on this same host reverse-proxies these paths to each backend's
+  // plain-HTTP EC2 instance, so the browser only ever talks to the HTTPS domain (avoids
+  // mixed-content blocking that a direct http://<backend-ip> URL would trigger).
   apiUrls: {
-    user: 'http://3.97.7.100:8001/api/users',
-    provider: 'http://99.79.32.212:8002/api/providers',
-    booking: 'http://15.223.196.103:8003/api/bookings',
-    location: 'http://3.96.137.140:8004/api/locations',
+    user: '/api/users',
+    provider: '/api/providers',
+    booking: '/api/bookings',
+    location: '/api/locations',
   },
   // Replace with a real key from https://console.cloud.google.com/google/maps-apis
   googleMapsApiKey: '',
