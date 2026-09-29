@@ -4,6 +4,15 @@
   padding: 60px 0;
 }
 
+.evr-add-row {
+  margin-bottom: 16px;
+
+  button mat-icon,
+  button mat-spinner {
+    margin-right: 6px;
+  }
+}
+
 .evr-empty-card {
   display: flex;
   flex-direction: column;
@@ -40,6 +49,15 @@
   align-items: center;
   gap: 16px;
   padding: 16px;
+}
+
+.evr-method-primary {
+  border: 1px solid var(--evr-primary);
+}
+
+.evr-primary-badge {
+  color: var(--evr-primary);
+  font-weight: 600;
 }
 
 .evr-method-icon {

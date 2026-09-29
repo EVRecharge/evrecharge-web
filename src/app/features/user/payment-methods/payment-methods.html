@@ -3,26 +3,46 @@
     <span class="evr-page-icon"><mat-icon>credit_card</mat-icon></span>
     <div>
       <h2>Payment methods</h2>
-      <p>Cards and UPI IDs you've saved while paying for a charging session.</p>
+      <p>
+        Your primary method is charged automatically as soon as a provider confirms your booking
+        &mdash; no need to pay upfront.
+      </p>
     </div>
   </div>
 
+  <div class="evr-add-row">
+    <button mat-flat-button color="primary" [disabled]="adding()" (click)="addMethod()">
+      @if (adding()) {
+        <mat-spinner diameter="18"></mat-spinner>
+      } @else {
+        <mat-icon>add</mat-icon>
+      }
+      Add card or bank account
+    </button>
+  </div>
+
+  @if (error()) {
+    <div class="evr-error-banner">{{ error() }}</div>
+  }
+  @if (notice()) {
+    <div class="evr-success-banner">{{ notice() }}</div>
+  }
+
   @if (loading()) {
     <div class="evr-loading"><mat-spinner diameter="32"></mat-spinner></div>
-  } @else if (error()) {
-    <div class="evr-error-banner">{{ error() }}</div>
   } @else if (methods().length === 0) {
     <mat-card class="evr-empty-card">
       <mat-icon>credit_card_off</mat-icon>
       <p>No saved payment methods yet.</p>
       <p class="evr-hint">
-        Choose "save for later" during checkout on your next booking payment, and it'll show up here.
+        Add a card or UPI-linked account above -- we run a small INR 1 authorization to save it
+        securely, then refund it automatically. Nothing is charged to keep it on file.
       </p>
     </mat-card>
   } @else {
     <div class="evr-method-list">
       @for (method of methods(); track method.tokenId) {
-        <mat-card class="evr-method-card">
+        <mat-card class="evr-method-card" [class.evr-method-primary]="method.isPrimary">
           <mat-icon class="evr-method-icon">
             {{ method.method === 'card' ? 'credit_card' : 'account_balance_wallet' }}
           </mat-icon>
@@ -32,8 +52,26 @@
             } @else {
               <strong>{{ method.upiVpaMasked }}</strong>
             }
-            <span class="evr-method-type">{{ method.method === 'card' ? 'Card' : 'UPI' }}</span>
+            <span class="evr-method-type">
+              {{ method.method === 'card' ? 'Card' : 'UPI' }}
+              @if (method.isPrimary) {
+                &middot; <span class="evr-primary-badge">Primary</span>
+              }
+            </span>
           </div>
+          @if (!method.isPrimary) {
+            <button
+              mat-stroked-button
+              [disabled]="settingPrimaryId() === method.tokenId"
+              (click)="makePrimary(method)"
+            >
+              @if (settingPrimaryId() === method.tokenId) {
+                <mat-spinner diameter="16"></mat-spinner>
+              } @else {
+                Make primary
+              }
+            </button>
+          }
           <button
             mat-icon-button
             [disabled]="removingId() === method.tokenId"

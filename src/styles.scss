@@ -79,6 +79,24 @@ body {
   font-size: 14px;
 }
 
+.evr-info-banner {
+  background: #eef6ff;
+  color: #0b4f8f;
+  border: 1px solid #cfe3fb;
+  border-radius: 4px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+
+  a {
+    color: inherit;
+    font-weight: 600;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Shared card + page-header treatment so every app screen reads as part of the
 // same product as the marketing homepage, not a bolt-on admin console.

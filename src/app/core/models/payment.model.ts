@@ -29,6 +29,24 @@ export interface PaymentMethod {
   cardLast4?: string;
   cardNetwork?: string;
   upiVpaMasked?: string;
+  isPrimary: boolean;
+}
+
+/** Shared shape between a booking OrderResponse and a method-setup SetupOrderResponse -- both open the same Checkout widget. */
+export interface CheckoutOrder {
+  razorpayOrderId: string;
+  amountPaise: number;
+  currency: string;
+  razorpayKeyId: string;
+  razorpayCustomerId: string;
+}
+
+export type SetupOrderResponse = CheckoutOrder;
+
+export interface VerifySetupRequest {
+  razorpayOrderId: string;
+  razorpayPaymentId: string;
+  razorpaySignature: string;
 }
 
 export type PayoutAccountStatus = 'NOT_STARTED' | 'CREATED' | 'ACTIVATED' | 'NEEDS_CLARIFICATION' | 'REJECTED';

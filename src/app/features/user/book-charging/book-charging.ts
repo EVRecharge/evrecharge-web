@@ -46,8 +46,7 @@ export class BookCharging implements OnInit {
   readonly submitting = signal(false);
   readonly error = signal<string | null>(null);
   readonly success = signal(false);
-  readonly payingNow = signal(false);
-  readonly paymentNotice = signal<string | null>(null);
+  readonly hasSavedMethod = signal<boolean | null>(null);
 
   private readonly today = new Date().toISOString().slice(0, 10);
   private readonly nowPlusHour = new Date(Date.now() + 60 * 60 * 1000).toTimeString().slice(0, 5);
@@ -82,6 +81,10 @@ export class BookCharging implements OnInit {
       },
     });
 
+    this.paymentService.listMethods().subscribe({
+      next: (methods) => this.hasSavedMethod.set(methods.some((m) => m.isPrimary)),
+      error: () => this.hasSavedMethod.set(false),
+    });
   }
 
   submit(): void {
@@ -112,45 +115,16 @@ export class BookCharging implements OnInit {
         city: provider.city,
       })
       .subscribe({
-        next: (res) => {
+        next: () => {
           this.submitting.set(false);
           this.success.set(true);
-          this.startPayment(res.booking.bookingId!, provider);
+          setTimeout(() => this.router.navigateByUrl('/user/bookings'), 1800);
         },
         error: (err) => {
           this.submitting.set(false);
           this.error.set(err?.error?.error ?? 'Could not create the booking. Please try again.');
         },
       });
-  }
-
-  private startPayment(bookingId: number, provider: Provider): void {
-    this.payingNow.set(true);
-    this.paymentService.createOrder(bookingId).subscribe({
-      next: async (order) => {
-        const session = this.auth.session();
-        const result = await this.paymentService.openCheckout(order, {
-          description: `Charging at ${provider.companyName}`,
-          prefillEmail: session?.email,
-        });
-        this.payingNow.set(false);
-        if (result.success) {
-          this.paymentNotice.set('Payment received -- redirecting to your bookings...');
-        } else {
-          this.paymentNotice.set(
-            (result.message ?? 'Payment was not completed.') + ' You can pay from My Bookings any time.',
-          );
-        }
-        setTimeout(() => this.router.navigateByUrl('/user/bookings'), 1600);
-      },
-      error: (err) => {
-        this.payingNow.set(false);
-        this.paymentNotice.set(
-          (err?.error?.error ?? 'Could not start the payment.') + ' You can pay from My Bookings any time.',
-        );
-        setTimeout(() => this.router.navigateByUrl('/user/bookings'), 1600);
-      },
-    });
   }
 
   private toLocalIso(d: Date): string {

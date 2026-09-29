@@ -21,14 +21,22 @@
         @if (error()) {
           <div class="evr-error-banner">{{ error() }}</div>
         }
-        @if (success() && payingNow()) {
-          <div class="evr-success-banner">
-            <mat-spinner diameter="16"></mat-spinner>
-            Booking confirmed &mdash; opening secure payment&hellip;
-          </div>
+        @if (success()) {
+          <div class="evr-success-banner">Booking requested &mdash; redirecting to your bookings&hellip;</div>
         }
-        @if (paymentNotice(); as notice) {
-          <div class="evr-success-banner">{{ notice }}</div>
+
+        @if (hasSavedMethod() === false) {
+          <div class="evr-info-banner">
+            <mat-icon inline>info</mat-icon>
+            You don't have a saved payment method yet. Once this booking is confirmed, you'll need to
+            <a routerLink="/user/payment-methods">add one</a> or pay manually from My Bookings.
+          </div>
+        } @else if (hasSavedMethod()) {
+          <div class="evr-info-banner">
+            <mat-icon inline>info</mat-icon>
+            Your primary saved payment method will be charged automatically once the station confirms
+            this booking.
+          </div>
         }
 
         <form [formGroup]="form" (ngSubmit)="submit()">
