@@ -8,6 +8,7 @@ export const environment = {
     provider: '/api/providers',
     booking: '/api/bookings',
     location: '/api/locations',
+    payment: '/api/payments',
   },
   // Replace with a real key from https://console.cloud.google.com/google/maps-apis
   googleMapsApiKey: 'AIzaSyC_d2XJrs7UlPHyN-iyUo95ksWK6oHkY4Y',

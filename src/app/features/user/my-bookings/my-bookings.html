@@ -31,9 +31,21 @@
           @if (booking.notes) {
             <p class="evr-notes">"{{ booking.notes }}"</p>
           }
-          @if (booking.status !== 'CANCELLED' && booking.status !== 'COMPLETED') {
-            <button mat-stroked-button color="warn" (click)="cancel(booking)">Cancel booking</button>
+          @if (booking.paymentNotice) {
+            <p class="evr-notes">{{ booking.paymentNotice }}</p>
           }
+          <div class="evr-actions">
+            @if (booking.status !== 'CANCELLED' && booking.status !== 'COMPLETED') {
+              <button mat-flat-button color="primary" [disabled]="booking.paying" (click)="payNow(booking)">
+                @if (booking.paying) {
+                  <mat-spinner diameter="18"></mat-spinner>
+                } @else {
+                  Pay now
+                }
+              </button>
+              <button mat-stroked-button color="warn" (click)="cancel(booking)">Cancel booking</button>
+            }
+          </div>
         </mat-card>
       }
     </div>

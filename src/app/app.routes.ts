@@ -41,6 +41,11 @@ export const routes: Routes = [
         path: 'profile',
         loadComponent: () => import('./features/user/profile/user-profile').then((m) => m.UserProfile),
       },
+      {
+        path: 'payment-methods',
+        loadComponent: () =>
+          import('./features/user/payment-methods/payment-methods').then((m) => m.PaymentMethods),
+      },
     ],
   },
   {
@@ -57,6 +62,11 @@ export const routes: Routes = [
         path: 'bookings',
         loadComponent: () =>
           import('./features/provider/bookings/provider-bookings').then((m) => m.ProviderBookings),
+      },
+      {
+        path: 'payout-account',
+        loadComponent: () =>
+          import('./features/provider/payout-account/payout-account').then((m) => m.PayoutAccount),
       },
     ],
   },

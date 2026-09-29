@@ -1,0 +1,59 @@
+.evr-loading {
+  display: flex;
+  justify-content: center;
+  padding: 60px 0;
+}
+
+.evr-empty-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--evr-muted);
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    color: var(--evr-muted);
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.evr-hint {
+  font-size: 13px;
+}
+
+.evr-method-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.evr-method-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+}
+
+.evr-method-icon {
+  color: var(--evr-primary);
+}
+
+.evr-method-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.evr-method-type {
+  font-size: 12px;
+  color: var(--evr-muted);
+}

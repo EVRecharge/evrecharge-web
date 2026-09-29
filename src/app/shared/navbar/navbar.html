@@ -7,12 +7,14 @@
   @if (auth.role() === 'USER') {
     <a mat-button routerLink="/user/find-charging" routerLinkActive="evr-active">Find Charging</a>
     <a mat-button routerLink="/user/bookings" routerLinkActive="evr-active">My Bookings</a>
+    <a mat-button routerLink="/user/payment-methods" routerLinkActive="evr-active">Payment Methods</a>
     <a mat-button routerLink="/user/profile" routerLinkActive="evr-active">Profile</a>
   }
 
   @if (auth.role() === 'PROVIDER') {
     <a mat-button routerLink="/provider/profile" routerLinkActive="evr-active">My Station</a>
     <a mat-button routerLink="/provider/bookings" routerLinkActive="evr-active">Bookings</a>
+    <a mat-button routerLink="/provider/payout-account" routerLinkActive="evr-active">Payout Account</a>
   }
 
   <span class="evr-spacer"></span>

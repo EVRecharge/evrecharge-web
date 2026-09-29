@@ -1,0 +1,101 @@
+<div class="evr-container">
+  <div class="evr-page-header">
+    <span class="evr-page-icon"><mat-icon>account_balance</mat-icon></span>
+    <div>
+      <h2>Payout account</h2>
+      <p>Link your bank account so your share of each booking settles automatically.</p>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="evr-loading"><mat-spinner diameter="32"></mat-spinner></div>
+  } @else {
+    <mat-card class="evr-status-card evr-status-{{ account()?.status ?? 'NOT_STARTED' }}">
+      <mat-icon>
+        {{ account()?.status === 'ACTIVATED' ? 'check_circle' : account()?.status === 'REJECTED' ? 'error' : 'hourglass_top' }}
+      </mat-icon>
+      <div>
+        <strong>{{ statusLabel(account()?.status) }}</strong>
+        @if (account()?.beneficiaryName) {
+          <p class="evr-status-detail">
+            {{ account()!.beneficiaryName }} &middot; A/C &bull;&bull;&bull;&bull;{{ account()!.bankAccountLast4 }}
+            &middot; {{ account()!.ifsc }}
+          </p>
+        }
+      </div>
+    </mat-card>
+
+    @if (canSubmit) {
+      <mat-card class="evr-form-card">
+        @if (error()) {
+          <div class="evr-error-banner">{{ error() }}</div>
+        }
+
+        <form [formGroup]="form" (ngSubmit)="submit()" class="evr-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Beneficiary name</mat-label>
+            <input matInput formControlName="beneficiaryName" placeholder="As per bank records" required />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Business type</mat-label>
+            <mat-select formControlName="businessType">
+              <mat-option value="individual">Individual</mat-option>
+              <mat-option value="proprietorship">Proprietorship</mat-option>
+              <mat-option value="partnership">Partnership</mat-option>
+              <mat-option value="private_limited">Private limited</mat-option>
+              <mat-option value="llp">LLP</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Bank account number</mat-label>
+            <input matInput formControlName="accountNumber" required />
+            @if (form.controls.accountNumber.invalid && form.controls.accountNumber.touched) {
+              <mat-error>Enter a valid account number.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>IFSC code</mat-label>
+            <input matInput formControlName="ifsc" placeholder="e.g. HDFC0001234" style="text-transform: uppercase" required />
+            @if (form.controls.ifsc.invalid && form.controls.ifsc.touched) {
+              <mat-error>Enter a valid IFSC code.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>PAN</mat-label>
+            <input matInput formControlName="pan" placeholder="e.g. ABCDE1234F" style="text-transform: uppercase" required />
+            @if (form.controls.pan.invalid && form.controls.pan.touched) {
+              <mat-error>Enter a valid PAN.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Business email</mat-label>
+            <input matInput type="email" formControlName="email" required />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Business phone</mat-label>
+            <input matInput formControlName="phone" placeholder="+91 98765 43210" required />
+          </mat-form-field>
+
+          <button mat-flat-button color="primary" type="submit" class="evr-submit evr-span-2" [disabled]="submitting()">
+            @if (submitting()) {
+              <mat-spinner diameter="20"></mat-spinner>
+            } @else {
+              Submit payout details
+            }
+          </button>
+
+          <p class="evr-hint evr-span-2">
+            Razorpay reviews these details (RBI-mandated KYC) before activating settlements; this usually takes
+            1-2 business days. Until then, the platform holds your share and settles it once approved.
+          </p>
+        </form>
+      </mat-card>
+    }
+  }
+</div>

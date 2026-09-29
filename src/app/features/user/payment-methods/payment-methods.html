@@ -1,0 +1,53 @@
+<div class="evr-container">
+  <div class="evr-page-header">
+    <span class="evr-page-icon"><mat-icon>credit_card</mat-icon></span>
+    <div>
+      <h2>Payment methods</h2>
+      <p>Cards and UPI IDs you've saved while paying for a charging session.</p>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="evr-loading"><mat-spinner diameter="32"></mat-spinner></div>
+  } @else if (error()) {
+    <div class="evr-error-banner">{{ error() }}</div>
+  } @else if (methods().length === 0) {
+    <mat-card class="evr-empty-card">
+      <mat-icon>credit_card_off</mat-icon>
+      <p>No saved payment methods yet.</p>
+      <p class="evr-hint">
+        Choose "save for later" during checkout on your next booking payment, and it'll show up here.
+      </p>
+    </mat-card>
+  } @else {
+    <div class="evr-method-list">
+      @for (method of methods(); track method.tokenId) {
+        <mat-card class="evr-method-card">
+          <mat-icon class="evr-method-icon">
+            {{ method.method === 'card' ? 'credit_card' : 'account_balance_wallet' }}
+          </mat-icon>
+          <div class="evr-method-info">
+            @if (method.method === 'card') {
+              <strong>{{ method.cardNetwork }} &bull;&bull;&bull;&bull; {{ method.cardLast4 }}</strong>
+            } @else {
+              <strong>{{ method.upiVpaMasked }}</strong>
+            }
+            <span class="evr-method-type">{{ method.method === 'card' ? 'Card' : 'UPI' }}</span>
+          </div>
+          <button
+            mat-icon-button
+            [disabled]="removingId() === method.tokenId"
+            (click)="remove(method)"
+            aria-label="Remove payment method"
+          >
+            @if (removingId() === method.tokenId) {
+              <mat-spinner diameter="18"></mat-spinner>
+            } @else {
+              <mat-icon>delete_outline</mat-icon>
+            }
+          </button>
+        </mat-card>
+      }
+    </div>
+  }
+</div>

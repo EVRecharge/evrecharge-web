@@ -21,8 +21,14 @@
         @if (error()) {
           <div class="evr-error-banner">{{ error() }}</div>
         }
-        @if (success()) {
-          <div class="evr-success-banner">Booking confirmed! Redirecting to your bookings&hellip;</div>
+        @if (success() && payingNow()) {
+          <div class="evr-success-banner">
+            <mat-spinner diameter="16"></mat-spinner>
+            Booking confirmed &mdash; opening secure payment&hellip;
+          </div>
+        }
+        @if (paymentNotice(); as notice) {
+          <div class="evr-success-banner">{{ notice }}</div>
         }
 
         <form [formGroup]="form" (ngSubmit)="submit()">

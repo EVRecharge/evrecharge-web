@@ -5,6 +5,7 @@ export const environment = {
     provider: 'http://localhost:8002/api/providers',
     booking: 'http://localhost:8003/api/bookings',
     location: 'http://localhost:8004/api/locations',
+    payment: 'http://localhost:8005/api/payments',
   },
   // Replace with a real key from https://console.cloud.google.com/google/maps-apis
   googleMapsApiKey: '',

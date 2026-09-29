@@ -9,10 +9,13 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BookingService } from '../../../core/services/booking.service';
 import { ProviderService } from '../../../core/services/provider.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { PaymentService } from '../../../core/services/payment.service';
 import { Booking } from '../../../core/models/booking.model';
 
 interface BookingRow extends Booking {
   providerName: string;
+  paying?: boolean;
+  paymentNotice?: string;
 }
 
 @Component({
@@ -26,6 +29,7 @@ export class MyBookings implements OnInit {
   private readonly bookingService = inject(BookingService);
   private readonly providerService = inject(ProviderService);
   private readonly auth = inject(AuthService);
+  private readonly paymentService = inject(PaymentService);
 
   readonly loading = signal(true);
   readonly bookings = signal<BookingRow[]>([]);
@@ -77,6 +81,28 @@ export class MyBookings implements OnInit {
         this.bookings.set(
           this.bookings().map((b) => (b.bookingId === booking.bookingId ? { ...b, status: 'CANCELLED' } : b)),
         );
+      },
+    });
+  }
+
+  payNow(booking: BookingRow): void {
+    booking.paying = true;
+    booking.paymentNotice = undefined;
+    this.paymentService.createOrder(booking.bookingId!).subscribe({
+      next: async (order) => {
+        const session = this.auth.session();
+        const result = await this.paymentService.openCheckout(order, {
+          description: `Charging at ${booking.providerName}`,
+          prefillEmail: session?.email,
+        });
+        booking.paying = false;
+        booking.paymentNotice = result.success ? 'Payment received.' : (result.message ?? 'Payment was not completed.');
+        this.bookings.set([...this.bookings()]);
+      },
+      error: (err) => {
+        booking.paying = false;
+        booking.paymentNotice = err?.error?.error ?? 'Could not start the payment.';
+        this.bookings.set([...this.bookings()]);
       },
     });
   }

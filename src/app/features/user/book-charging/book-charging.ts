@@ -12,6 +12,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ProviderService } from '../../../core/services/provider.service';
 import { BookingService } from '../../../core/services/booking.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { PaymentService } from '../../../core/services/payment.service';
 import { Provider } from '../../../core/models/provider.model';
 
 @Component({
@@ -38,12 +39,15 @@ export class BookCharging implements OnInit {
   private readonly providerService = inject(ProviderService);
   private readonly bookingService = inject(BookingService);
   private readonly auth = inject(AuthService);
+  private readonly paymentService = inject(PaymentService);
 
   readonly provider = signal<Provider | null>(null);
   readonly loadingProvider = signal(true);
   readonly submitting = signal(false);
   readonly error = signal<string | null>(null);
   readonly success = signal(false);
+  readonly payingNow = signal(false);
+  readonly paymentNotice = signal<string | null>(null);
 
   private readonly today = new Date().toISOString().slice(0, 10);
   private readonly nowPlusHour = new Date(Date.now() + 60 * 60 * 1000).toTimeString().slice(0, 5);
@@ -108,16 +112,45 @@ export class BookCharging implements OnInit {
         city: provider.city,
       })
       .subscribe({
-        next: () => {
+        next: (res) => {
           this.submitting.set(false);
           this.success.set(true);
-          setTimeout(() => this.router.navigateByUrl('/user/bookings'), 1200);
+          this.startPayment(res.booking.bookingId!, provider);
         },
         error: (err) => {
           this.submitting.set(false);
           this.error.set(err?.error?.error ?? 'Could not create the booking. Please try again.');
         },
       });
+  }
+
+  private startPayment(bookingId: number, provider: Provider): void {
+    this.payingNow.set(true);
+    this.paymentService.createOrder(bookingId).subscribe({
+      next: async (order) => {
+        const session = this.auth.session();
+        const result = await this.paymentService.openCheckout(order, {
+          description: `Charging at ${provider.companyName}`,
+          prefillEmail: session?.email,
+        });
+        this.payingNow.set(false);
+        if (result.success) {
+          this.paymentNotice.set('Payment received -- redirecting to your bookings...');
+        } else {
+          this.paymentNotice.set(
+            (result.message ?? 'Payment was not completed.') + ' You can pay from My Bookings any time.',
+          );
+        }
+        setTimeout(() => this.router.navigateByUrl('/user/bookings'), 1600);
+      },
+      error: (err) => {
+        this.payingNow.set(false);
+        this.paymentNotice.set(
+          (err?.error?.error ?? 'Could not start the payment.') + ' You can pay from My Bookings any time.',
+        );
+        setTimeout(() => this.router.navigateByUrl('/user/bookings'), 1600);
+      },
+    });
   }
 
   private toLocalIso(d: Date): string {
