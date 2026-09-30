@@ -1,0 +1,58 @@
+<button
+  class="evr-chat-fab"
+  mat-fab
+  color="primary"
+  (click)="toggle()"
+  [attr.aria-label]="open() ? 'Close chat' : 'Open chat'"
+>
+  <mat-icon>{{ open() ? 'close' : 'chat' }}</mat-icon>
+</button>
+
+@if (open()) {
+  <div class="evr-chat-panel">
+    <div class="evr-chat-header">
+      <div class="evr-chat-header-title">
+        <mat-icon>support_agent</mat-icon>
+        <span>EVRecharge Assistant</span>
+      </div>
+      <button mat-icon-button (click)="clear()" aria-label="Clear conversation" title="Clear conversation">
+        <mat-icon>delete_outline</mat-icon>
+      </button>
+    </div>
+
+    <div class="evr-chat-messages" #scrollArea>
+      @if (loadingHistory()) {
+        <div class="evr-chat-loading"><mat-spinner diameter="28"></mat-spinner></div>
+      } @else {
+        @for (message of messages(); track $index) {
+          <div class="evr-chat-bubble" [class.evr-chat-bubble-user]="message.role === 'user'">
+            {{ message.content }}
+          </div>
+        }
+        @if (sending()) {
+          <div class="evr-chat-bubble evr-chat-typing">
+            <span></span><span></span><span></span>
+          </div>
+        }
+      }
+    </div>
+
+    @if (error()) {
+      <div class="evr-chat-error">{{ error() }}</div>
+    }
+
+    <form class="evr-chat-input-row" (ngSubmit)="send()">
+      <input
+        type="text"
+        placeholder="Ask a question..."
+        [ngModel]="draft()"
+        (ngModelChange)="draft.set($event)"
+        name="chatDraft"
+        autocomplete="off"
+      />
+      <button mat-icon-button color="primary" type="submit" [disabled]="sending() || !draft().trim()" aria-label="Send">
+        <mat-icon>send</mat-icon>
+      </button>
+    </form>
+  </div>
+}

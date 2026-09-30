@@ -3,3 +3,7 @@
 }
 
 <router-outlet></router-outlet>
+
+@if (auth.isAuthenticated()) {
+  <evr-chat-widget></evr-chat-widget>
+}
