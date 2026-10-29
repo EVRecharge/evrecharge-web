@@ -10,12 +10,23 @@
   <div class="evr-filters">
     <mat-form-field appearance="outline" class="evr-city-filter">
       <mat-label>Filter by city</mat-label>
-      <input matInput [ngModel]="cityFilter()" (ngModelChange)="cityFilter.set($event)" placeholder="e.g. Mumbai" />
+      <input
+        matInput
+        [ngModel]="cityFilter()"
+        (ngModelChange)="cityFilter.set($event)"
+        (keyup.enter)="searchCity()"
+        placeholder="e.g. Mumbai"
+      />
     </mat-form-field>
+
+    <button mat-flat-button color="primary" (click)="searchCity()">
+      <mat-icon>search</mat-icon>
+      Search by city
+    </button>
 
     <mat-form-field appearance="outline" class="evr-sort">
       <mat-label>Sort by</mat-label>
-      <mat-select [ngModel]="sortMode()" (ngModelChange)="sortMode.set($event)">
+      <mat-select [ngModel]="sortMode()" (ngModelChange)="onSortChange($event)">
         <mat-option value="distance">Nearest first</mat-option>
         <mat-option value="rate">Lowest rate</mat-option>
         <mat-option value="availability">Most availability</mat-option>
@@ -26,6 +37,9 @@
       <mat-icon>my_location</mat-icon>
       Use my location
     </button>
+    @if (locationError()) {
+      <p class="evr-empty">{{ locationError() }}</p>
+    }
   </div>
 
   <div class="evr-layout">
@@ -36,6 +50,7 @@
           [options]="mapOptions"
           height="480px"
           width="100%"
+          (mapInitialized)="fitMap(providers())"
         >
           @if (userLocation(); as loc) {
             <map-marker
