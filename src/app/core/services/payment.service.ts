@@ -24,6 +24,8 @@ export interface CheckoutOptions {
   description: string;
   prefillEmail?: string;
   prefillContact?: string;
+  /** Limits the checkout window to just this method (used when saving a payment method). */
+  method?: 'card' | 'upi';
 }
 
 @Injectable({ providedIn: 'root' })
@@ -104,6 +106,9 @@ export class PaymentService {
         customer_id: order.razorpayCustomerId,
         recurring: '1',
         save: 1,
+        method: options.method
+          ? { card: options.method === 'card', upi: options.method === 'upi', netbanking: false, wallet: false, emi: false, paylater: false }
+          : undefined,
         name: 'EVRecharge India',
         description: 'Add payment method (refunded automatically)',
         prefill: { email: options.prefillEmail, contact: options.prefillContact },

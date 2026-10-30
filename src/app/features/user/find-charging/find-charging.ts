@@ -14,6 +14,7 @@ import { ProviderService } from '../../../core/services/provider.service';
 import { LocationService } from '../../../core/services/location.service';
 import { GoogleMapsLoaderService } from '../../../core/services/google-maps-loader.service';
 import { Station } from '../../../core/models/provider.model';
+import { stationMarkerIcon } from '../../../core/util/station-marker';
 
 type SortMode = 'distance' | 'rate' | 'availability';
 
@@ -45,6 +46,11 @@ export class FindCharging implements OnInit {
   @ViewChild(GoogleMap) private googleMap?: GoogleMap;
 
   readonly loading = signal(true);
+  /** Set when the driver asks for their location, so the next map update centres on them instead of fitting every station. */
+  private focusUserPending = false;
+  readonly stationMarker = computed<google.maps.MarkerOptions>(() =>
+    this.mapReady() ? { icon: stationMarkerIcon('#0b6e4f') } : {},
+  );
   readonly mapReady = signal(false);
   readonly mapsConfigured = this.mapsLoader.isConfigured;
   readonly userLocation = signal<{ lat: number; lng: number } | null>(null);
@@ -108,9 +114,11 @@ export class FindCharging implements OnInit {
       (pos) => {
         this.locationError.set('');
         this.mapCenterOverride.set(null);
+        this.focusUserPending = true;
         this.userLocation.set({ lat: pos.coords.latitude, lng: pos.coords.longitude });
       },
       () => this.locationError.set('Could not get your location. Allow location access or search by city.'),
+      { enableHighAccuracy: true, timeout: 10000 },
     );
   }
 
@@ -169,6 +177,13 @@ export class FindCharging implements OnInit {
   fitMap(list: Station[]): void {
     const map = this.googleMap?.googleMap;
     if (!map || !window.google?.maps) return;
+    const me = this.userLocation();
+    if (this.focusUserPending && me) {
+      this.focusUserPending = false;
+      map.setCenter(me);
+      map.setZoom(13);
+      return;
+    }
     const points = list.filter((p) => p.latitude != null && p.longitude != null);
     if (!points.length) return;
     if (points.length === 1) {

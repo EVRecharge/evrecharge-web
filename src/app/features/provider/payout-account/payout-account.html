@@ -25,8 +25,22 @@
       </div>
     </mat-card>
 
-    @if (canSubmit) {
+    @if (canSubmit && !formOpen()) {
+      <div class="evr-add-row">
+        <button mat-flat-button color="primary" (click)="formOpen.set(true)">
+          <mat-icon>add</mat-icon>
+          {{ account()?.status === 'NOT_STARTED' || !account()?.status ? 'Add bank account' : 'Update bank account' }}
+        </button>
+      </div>
+    }
+
+    @if (canSubmit && formOpen()) {
       <mat-card class="evr-form-card">
+        <h3>Bank account for payouts</h3>
+        <p class="evr-hint">
+          Payouts are settled to a bank account (cards can't receive payouts). Enter the account exactly as it
+          appears on your bank records.
+        </p>
         @if (error()) {
           <div class="evr-error-banner">{{ error() }}</div>
         }
@@ -82,7 +96,11 @@
             <input matInput formControlName="phone" placeholder="+91 98765 43210" required />
           </mat-form-field>
 
-          <button mat-flat-button color="primary" type="submit" class="evr-submit evr-span-2" [disabled]="submitting()">
+          <button mat-stroked-button type="button" class="evr-submit" [disabled]="submitting()" (click)="formOpen.set(false)">
+            Cancel
+          </button>
+
+          <button mat-flat-button color="primary" type="submit" class="evr-submit" [disabled]="submitting()">
             @if (submitting()) {
               <mat-spinner diameter="20"></mat-spinner>
             } @else {

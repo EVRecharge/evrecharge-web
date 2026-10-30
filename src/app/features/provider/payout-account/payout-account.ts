@@ -34,6 +34,8 @@ export class PayoutAccount implements OnInit {
   readonly submitting = signal(false);
   readonly error = signal<string | null>(null);
   readonly account = signal<PayoutAccountModel | null>(null);
+  /** The bank-details form stays hidden until the provider asks to add (or redo) their account. */
+  readonly formOpen = signal(false);
 
   readonly businessTypes = ['individual', 'proprietorship', 'partnership', 'private_limited', 'llp'];
 
@@ -75,6 +77,7 @@ export class PayoutAccount implements OnInit {
     this.paymentService.submitPayoutAccount(this.form.getRawValue()).subscribe({
       next: (account) => {
         this.account.set(account);
+        this.formOpen.set(false);
         this.submitting.set(false);
       },
       error: (err) => {

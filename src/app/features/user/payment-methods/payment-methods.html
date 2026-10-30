@@ -10,16 +10,65 @@
     </div>
   </div>
 
-  <div class="evr-add-row">
-    <button mat-flat-button color="primary" [disabled]="adding()" (click)="addMethod()">
-      @if (adding()) {
-        <mat-spinner diameter="18"></mat-spinner>
-      } @else {
+  @if (!choosing()) {
+    <div class="evr-add-row">
+      <button mat-flat-button color="primary" (click)="openChooser()">
         <mat-icon>add</mat-icon>
+        Add payment method
+      </button>
+    </div>
+  } @else {
+    <mat-card class="evr-add-card">
+      <h3>What would you like to add?</h3>
+      <div class="evr-type-options" role="radiogroup" aria-label="Payment method type">
+        <button
+          type="button"
+          role="radio"
+          class="evr-type-option"
+          [class.evr-type-selected]="methodType() === 'card'"
+          [attr.aria-checked]="methodType() === 'card'"
+          (click)="methodType.set('card')"
+        >
+          <mat-icon>credit_card</mat-icon>
+          <strong>Debit / credit card</strong>
+        </button>
+        <button
+          type="button"
+          role="radio"
+          class="evr-type-option"
+          [class.evr-type-selected]="methodType() === 'upi'"
+          [attr.aria-checked]="methodType() === 'upi'"
+          (click)="methodType.set('upi')"
+        >
+          <mat-icon>account_balance_wallet</mat-icon>
+          <strong>UPI / bank-linked account</strong>
+        </button>
+      </div>
+
+      @if (methodType() === 'card') {
+        <p class="evr-hint">
+          You'll enter your card number, expiry and CVV in Razorpay's secure window &mdash; they never touch our servers.
+        </p>
+      } @else {
+        <p class="evr-hint">
+          You'll enter your UPI ID (the one linked to your bank account) in Razorpay's secure window and approve the
+          request in your UPI app.
+        </p>
       }
-      Add card or bank account
-    </button>
-  </div>
+      <p class="evr-hint">We run a small INR 1 authorization to save it, then refund it automatically.</p>
+
+      <div class="evr-add-actions">
+        <button mat-stroked-button type="button" [disabled]="adding()" (click)="choosing.set(false)">Cancel</button>
+        <button mat-flat-button color="primary" type="button" [disabled]="adding()" (click)="addMethod()">
+          @if (adding()) {
+            <mat-spinner diameter="18"></mat-spinner>
+          } @else {
+            Continue
+          }
+        </button>
+      </div>
+    </mat-card>
+  }
 
   @if (error()) {
     <div class="evr-error-banner">{{ error() }}</div>

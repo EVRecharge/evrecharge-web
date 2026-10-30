@@ -14,6 +14,38 @@
     <div class="evr-success-banner">{{ notice() }}</div>
   }
 
+  <div class="evr-map-panel">
+    @if (mapReady()) {
+      <google-map
+        [center]="mapCenter()"
+        [options]="mapOptions"
+        height="360px"
+        width="100%"
+        (mapClick)="onMapClick($event)"
+        (mapInitialized)="fitMap(draftPin())"
+      >
+        @for (station of stationPins(); track station.stationId) {
+          <map-marker
+            [position]="{ lat: station.latitude, lng: station.longitude }"
+            [title]="station.name"
+            [options]="stationMarker()"
+            (mapClick)="startEdit(station)"
+          ></map-marker>
+        }
+        @if (draftPin(); as pin) {
+          <map-marker [position]="pin" [options]="draftMarker()" title="Station location" (mapDragend)="onPinDragEnd($event)"></map-marker>
+        }
+      </google-map>
+    } @else {
+      <div class="evr-map-placeholder">
+        <mat-icon>map</mat-icon>
+        <p>
+          @if (mapsConfigured) { Loading map&hellip; } @else { Map preview is unavailable because no Google Maps API key is configured. }
+        </p>
+      </div>
+    }
+  </div>
+
   @if (editing() === null) {
     <div class="evr-add-row">
       <button mat-flat-button color="primary" (click)="startAdd()">
@@ -32,22 +64,22 @@
 
         <mat-form-field appearance="outline" class="evr-span-2">
           <mat-label>Street address</mat-label>
-          <input matInput formControlName="address" required />
+          <input matInput formControlName="address" required (blur)="locateAddress()" />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>City</mat-label>
-          <input matInput formControlName="city" required />
+          <input matInput formControlName="city" required (blur)="locateAddress()" />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>State</mat-label>
-          <input matInput formControlName="state" required />
+          <input matInput formControlName="state" required (blur)="locateAddress()" />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>PIN code</mat-label>
-          <input matInput formControlName="zipCode" required />
+          <input matInput formControlName="zipCode" required (blur)="locateAddress()" />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
@@ -69,6 +101,8 @@
           <input matInput type="number" min="1" formControlName="maxConcurrentCharges" required />
         </mat-form-field>
 
+        <p class="evr-span-2 evr-map-hint">The pin follows the address you type. Drag it, or click the map, to fine-tune the exact spot.</p>
+
         <div class="evr-span-2 evr-location-row">
           <mat-form-field appearance="outline">
             <mat-label>Latitude</mat-label>
@@ -78,6 +112,10 @@
             <mat-label>Longitude</mat-label>
             <input matInput type="number" step="0.000001" formControlName="longitude" required />
           </mat-form-field>
+          <button mat-stroked-button type="button" (click)="locateAddress()" [disabled]="geocoding() || !mapReady()">
+            <mat-icon>pin_drop</mat-icon>
+            @if (geocoding()) { Finding&hellip; } @else { Pin address on map }
+          </button>
           <button mat-stroked-button type="button" (click)="useCurrentLocation()" [disabled]="locating()">
             <mat-icon>my_location</mat-icon>
             @if (locating()) { Locating&hellip; } @else { Use current location }

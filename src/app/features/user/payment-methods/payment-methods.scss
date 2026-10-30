@@ -75,3 +75,43 @@
   font-size: 12px;
   color: var(--evr-muted);
 }
+
+.evr-add-card {
+  max-width: 560px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.evr-type-options {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+
+.evr-type-option {
+  flex: 1 1 200px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  border: 1.5px solid rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.evr-type-selected {
+  border-color: var(--evr-primary, #0b6e4f);
+  background: rgba(11, 110, 79, 0.08);
+}
+
+.evr-add-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+}

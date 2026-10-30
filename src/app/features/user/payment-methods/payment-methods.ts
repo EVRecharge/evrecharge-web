@@ -25,6 +25,9 @@ export class PaymentMethods implements OnInit {
   readonly removingId = signal<string | null>(null);
   readonly settingPrimaryId = signal<string | null>(null);
   readonly adding = signal(false);
+  /** Whether the "what are you adding?" panel is open, and which option is picked in it. */
+  readonly choosing = signal(false);
+  readonly methodType = signal<'card' | 'upi'>('card');
 
   ngOnInit(): void {
     this.load();
@@ -44,6 +47,12 @@ export class PaymentMethods implements OnInit {
     });
   }
 
+  openChooser(): void {
+    this.error.set(null);
+    this.notice.set(null);
+    this.choosing.set(true);
+  }
+
   async addMethod(): Promise<void> {
     this.adding.set(true);
     this.error.set(null);
@@ -55,6 +64,7 @@ export class PaymentMethods implements OnInit {
       result = await this.paymentService.addPaymentMethod({
         description: 'Add payment method',
         prefillEmail: session?.email,
+        method: this.methodType(),
       });
     } catch {
       result = { success: false, message: 'Something went wrong while adding the payment method.' };
@@ -63,6 +73,7 @@ export class PaymentMethods implements OnInit {
     }
 
     if (result.success && result.method) {
+      this.choosing.set(false);
       this.methods.set([...this.methods(), result.method]);
       this.notice.set('Payment method added.');
     } else if (result.message) {
