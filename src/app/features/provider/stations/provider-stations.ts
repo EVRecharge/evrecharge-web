@@ -48,6 +48,8 @@ export class ProviderStations implements OnInit {
   readonly saving = signal(false);
   readonly locating = signal(false);
   readonly removingId = signal<number | null>(null);
+  /** The station whose delete is awaiting an explicit confirmation. */
+  readonly confirmingId = signal<number | null>(null);
   readonly error = signal<string | null>(null);
   readonly notice = signal<string | null>(null);
   readonly stations = signal<Station[]>([]);
@@ -164,7 +166,7 @@ export class ProviderStations implements OnInit {
   private load(): void {
     if (!this.providerId) return;
     this.loading.set(true);
-    this.providerService.listStations(this.providerId).subscribe({
+    this.providerService.listStations(this.providerId, true).subscribe({
       next: (stations) => {
         this.stations.set(stations);
         this.loading.set(false);
@@ -197,8 +199,11 @@ export class ProviderStations implements OnInit {
       maxConcurrentCharges: station.maxConcurrentCharges ?? 1,
     });
     this.editing.set(station.stationId!);
+    this.confirmingId.set(null);
     this.error.set(null);
     this.notice.set(null);
+    // The form sits above the list -- bring it into view.
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   cancel(): void {
@@ -254,30 +259,31 @@ export class ProviderStations implements OnInit {
     });
   }
 
-  remove(station: Station): void {
+  askDelete(station: Station): void {
+    this.error.set(null);
+    this.notice.set(null);
+    this.confirmingId.set(station.stationId!);
+  }
+
+  cancelDelete(): void {
+    this.confirmingId.set(null);
+  }
+
+  /** Runs after the owner has confirmed. Existing bookings keep their record; the station just stops being listed. */
+  confirmDelete(station: Station): void {
     this.removingId.set(station.stationId!);
     this.providerService.deleteStation(station.stationId!).subscribe({
       next: () => {
-        this.stations.set(this.stations().map((s) => (s.stationId === station.stationId ? { ...s, isActive: false } : s)));
+        this.stations.set(this.stations().filter((s) => s.stationId !== station.stationId));
+        if (this.editing() === station.stationId) this.editing.set(null);
+        this.notice.set(`"${station.name}" was deleted.`);
         this.removingId.set(null);
+        this.confirmingId.set(null);
       },
       error: (err) => {
-        this.error.set(err?.error?.error ?? 'Could not remove this station.');
+        this.error.set(err?.error?.error ?? 'Could not delete this station.');
         this.removingId.set(null);
-      },
-    });
-  }
-
-  reactivate(station: Station): void {
-    this.removingId.set(station.stationId!);
-    this.providerService.updateStation(station.stationId!, { ...station, isActive: true }).subscribe({
-      next: (updated) => {
-        this.stations.set(this.stations().map((s) => (s.stationId === updated.stationId ? updated : s)));
-        this.removingId.set(null);
-      },
-      error: (err) => {
-        this.error.set(err?.error?.error ?? 'Could not reactivate this station.');
-        this.removingId.set(null);
+        this.confirmingId.set(null);
       },
     });
   }

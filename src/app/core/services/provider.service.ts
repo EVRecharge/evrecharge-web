@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Provider, Station } from '../models/provider.model';
@@ -58,7 +58,7 @@ export class ProviderService {
   }
 
   private get stationsBase(): string {
-    return this.base.replace(/\/providers$/, '/stations');
+    return `${this.base}/stations`;
   }
 
   getAllStations(): Observable<Station[]> {
@@ -69,8 +69,10 @@ export class ProviderService {
     return this.http.get<Station>(`${this.stationsBase}/${stationId}`);
   }
 
-  listStations(providerId: number): Observable<Station[]> {
-    return this.http.get<Station[]>(`${this.base}/${providerId}/stations`);
+  /** `activeOnly` hides removed stations; the bookings page wants them all so old bookings keep their station name. */
+  listStations(providerId: number, activeOnly = false): Observable<Station[]> {
+    const params = new HttpParams().set('activeOnly', activeOnly);
+    return this.http.get<Station[]>(`${this.base}/${providerId}/stations`, { params });
   }
 
   createStation(providerId: number, station: Station): Observable<Station> {

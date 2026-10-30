@@ -118,3 +118,15 @@
   font-size: 13px;
   color: var(--evr-muted);
 }
+
+.evr-station-card button mat-icon {
+  margin-right: 4px;
+}
+
+.evr-confirm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-weight: 500;
+}

@@ -143,12 +143,9 @@
   } @else {
     <div class="evr-station-list">
       @for (station of stations(); track station.stationId) {
-        <mat-card class="evr-station-card" [class.evr-station-inactive]="station.isActive === false">
+        <mat-card class="evr-station-card">
           <div class="evr-station-info">
             <strong>{{ station.name }}</strong>
-            @if (station.isActive === false) {
-              <span class="evr-inactive-badge">Not listed</span>
-            }
             <span>{{ station.address }}, {{ station.city }}, {{ station.state }} {{ station.zipCode }}</span>
             <span class="evr-station-meta">
               &#8377;{{ station.ratePerHour | number: '1.2-2' }}/hr &middot;
@@ -156,23 +153,26 @@
               {{ station.maxConcurrentCharges ?? 1 }} slot{{ (station.maxConcurrentCharges ?? 1) === 1 ? '' : 's' }}
             </span>
           </div>
-          <button mat-stroked-button (click)="startEdit(station)">Edit</button>
-          @if (station.isActive === false) {
-            <button mat-stroked-button [disabled]="removingId() === station.stationId" (click)="reactivate(station)">
-              Relist
-            </button>
+          @if (confirmingId() === station.stationId) {
+            <div class="evr-confirm">
+              <span>Delete this station?</span>
+              <button mat-stroked-button [disabled]="removingId() === station.stationId" (click)="cancelDelete()">Cancel</button>
+              <button mat-flat-button color="warn" [disabled]="removingId() === station.stationId" (click)="confirmDelete(station)">
+                @if (removingId() === station.stationId) {
+                  <mat-spinner diameter="18"></mat-spinner>
+                } @else {
+                  Delete
+                }
+              </button>
+            </div>
           } @else {
-            <button
-              mat-icon-button
-              [disabled]="removingId() === station.stationId"
-              (click)="remove(station)"
-              aria-label="Remove station"
-            >
-              @if (removingId() === station.stationId) {
-                <mat-spinner diameter="18"></mat-spinner>
-              } @else {
-                <mat-icon>delete_outline</mat-icon>
-              }
+            <button mat-stroked-button (click)="startEdit(station)">
+              <mat-icon>edit</mat-icon>
+              Edit
+            </button>
+            <button mat-stroked-button color="warn" (click)="askDelete(station)">
+              <mat-icon>delete_outline</mat-icon>
+              Delete
             </button>
           }
         </mat-card>
