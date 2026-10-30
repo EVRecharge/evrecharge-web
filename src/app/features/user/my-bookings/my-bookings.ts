@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { forkJoin, map } from 'rxjs';
+import { catchError, forkJoin, map, of } from 'rxjs';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -47,16 +47,36 @@ export class MyBookings implements OnInit {
           return;
         }
         const uniqueProviderIds = [...new Set(bookings.map((b) => b.providerId))];
-        forkJoin(
-          uniqueProviderIds.map((id) =>
-            this.providerService.getById(id).pipe(map((p) => [id, p.companyName] as const)),
+        const uniqueStationIds = [...new Set(bookings.map((b) => b.stationId).filter((id): id is number => !!id))];
+        forkJoin({
+          providers: forkJoin(
+            uniqueProviderIds.map((id) =>
+              this.providerService.getById(id).pipe(map((p) => [id, p.companyName] as const)),
+            ),
           ),
-        ).subscribe({
-          next: (pairs) => {
-            const nameById = new Map(pairs);
+          stations: uniqueStationIds.length
+            ? forkJoin(
+                uniqueStationIds.map((id) =>
+                  this.providerService.getStation(id).pipe(
+                    map((s) => [id, s.name] as [number, string]),
+                    catchError(() => of([id, ''] as [number, string])),
+                  ),
+                ),
+              )
+            : of([] as [number, string][]),
+        }).subscribe({
+          next: ({ providers, stations }) => {
+            const nameById = new Map(providers);
+            const stationNameById = new Map(stations);
             this.bookings.set(
               bookings
-                .map((b) => ({ ...b, providerName: nameById.get(b.providerId) ?? `Provider #${b.providerId}` }))
+                .map((b) => ({
+                  ...b,
+                  providerName:
+                    (b.stationId && stationNameById.get(b.stationId)) ||
+                    nameById.get(b.providerId) ||
+                    `Provider #${b.providerId}`,
+                }))
                 .sort((a, b) => b.startTime.localeCompare(a.startTime)),
             );
             this.loading.set(false);

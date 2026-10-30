@@ -4,6 +4,7 @@ export interface Booking {
   bookingId?: number;
   userId: number;
   providerId: number;
+  stationId?: number;
   startTime: string;
   endTime: string;
   durationInHours?: number;

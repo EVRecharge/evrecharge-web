@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { forkJoin, map } from 'rxjs';
 import { MatCardModule } from '@angular/material/card';
@@ -9,6 +9,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BookingService } from '../../../core/services/booking.service';
 import { UserService } from '../../../core/services/user.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ProviderService } from '../../../core/services/provider.service';
 import { Booking, BookingStatus } from '../../../core/models/booking.model';
 
 interface BookingRow extends Booking {
@@ -27,14 +28,28 @@ export class ProviderBookings implements OnInit {
   private readonly bookingService = inject(BookingService);
   private readonly userService = inject(UserService);
   private readonly auth = inject(AuthService);
+  private readonly providerService = inject(ProviderService);
 
   readonly loading = signal(true);
   readonly bookings = signal<BookingRow[]>([]);
   readonly error = signal<string | null>(null);
+  readonly stationNames = signal<Map<number, string>>(new Map());
+  /** null = all stations */
+  readonly stationFilter = signal<number | null>(null);
+  readonly stationOptions = computed(() => [...this.stationNames().entries()]);
+  readonly visibleBookings = computed(() => {
+    const filter = this.stationFilter();
+    return filter === null ? this.bookings() : this.bookings().filter((b) => b.stationId === filter);
+  });
 
   ngOnInit(): void {
     const providerId = this.auth.session()?.profileId;
     if (!providerId) return;
+
+    this.providerService.listStations(providerId).subscribe({
+      next: (stations) =>
+        this.stationNames.set(new Map(stations.filter((s) => s.stationId).map((s) => [s.stationId!, s.name] as [number, string]))),
+    });
 
     this.bookingService.getByProvider(providerId).subscribe({
       next: (bookings) => {
@@ -78,6 +93,10 @@ export class ProviderBookings implements OnInit {
         this.loading.set(false);
       },
     });
+  }
+
+  stationLabel(booking: Booking): string {
+    return (booking.stationId && this.stationNames().get(booking.stationId)) || '';
   }
 
   setStatus(booking: BookingRow, status: BookingStatus): void {

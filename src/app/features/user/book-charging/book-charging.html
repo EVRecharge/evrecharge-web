@@ -8,7 +8,7 @@
   } @else if (provider(); as p) {
     <div class="evr-book-layout">
       <mat-card class="evr-provider-summary">
-        <h2>{{ p.companyName }}</h2>
+        <h2>{{ p.name }}</h2>
         <p class="evr-address"><mat-icon inline>place</mat-icon> {{ p.address }}, {{ p.city }}, {{ p.state }}</p>
         <p><mat-icon inline>currency_rupee</mat-icon> {{ p.ratePerHour | number: '1.2-2' }} / hour</p>
         <p><mat-icon inline>ev_station</mat-icon> {{ p.chargerType || 'Standard charger' }}</p>

@@ -1,0 +1,94 @@
+.evr-loading {
+  display: flex;
+  justify-content: center;
+  padding: 60px 0;
+}
+
+.evr-add-row {
+  margin-bottom: 16px;
+
+  button mat-icon {
+    margin-right: 6px;
+  }
+}
+
+.evr-station-form-card {
+  padding: 16px;
+  max-width: 760px;
+  margin-bottom: 24px;
+}
+
+.evr-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 16px;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.evr-span-2 {
+  grid-column: span 2;
+
+  @media (max-width: 640px) {
+    grid-column: span 1;
+  }
+}
+
+.evr-location-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+
+  mat-form-field {
+    flex: 1 1 160px;
+  }
+}
+
+.evr-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.evr-station-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 760px;
+}
+
+.evr-station-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+}
+
+.evr-station-inactive {
+  opacity: 0.65;
+}
+
+.evr-station-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.evr-station-meta {
+  font-size: 13px;
+  color: var(--evr-muted);
+}
+
+.evr-inactive-badge {
+  font-size: 12px;
+  color: var(--evr-muted);
+}
+
+.evr-empty {
+  color: var(--evr-muted);
+}

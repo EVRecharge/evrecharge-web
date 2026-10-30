@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Provider } from '../models/provider.model';
+import { Provider, Station } from '../models/provider.model';
 
 interface AuthResponse {
   message: string;
@@ -34,6 +34,34 @@ export class ProviderService {
 
   getByCity(city: string): Observable<Provider[]> {
     return this.http.get<Provider[]>(`${this.base}/city/${encodeURIComponent(city)}`);
+  }
+
+  private get stationsBase(): string {
+    return this.base.replace(/\/providers$/, '/stations');
+  }
+
+  getAllStations(): Observable<Station[]> {
+    return this.http.get<Station[]>(this.stationsBase);
+  }
+
+  getStation(stationId: number): Observable<Station> {
+    return this.http.get<Station>(`${this.stationsBase}/${stationId}`);
+  }
+
+  listStations(providerId: number): Observable<Station[]> {
+    return this.http.get<Station[]>(`${this.base}/${providerId}/stations`);
+  }
+
+  createStation(providerId: number, station: Station): Observable<Station> {
+    return this.http.post<Station>(`${this.base}/${providerId}/stations`, station);
+  }
+
+  updateStation(stationId: number, station: Station): Observable<Station> {
+    return this.http.put<Station>(`${this.stationsBase}/${stationId}`, station);
+  }
+
+  deleteStation(stationId: number): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.stationsBase}/${stationId}`);
   }
 
   update(providerId: number, provider: Provider): Observable<Provider> {

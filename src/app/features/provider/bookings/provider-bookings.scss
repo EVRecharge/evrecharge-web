@@ -47,3 +47,14 @@
   gap: 8px;
   margin-top: 8px;
 }
+
+.evr-station-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+
+  .evr-active {
+    background: rgba(11, 110, 79, 0.12);
+  }
+}

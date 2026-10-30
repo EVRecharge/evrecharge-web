@@ -30,7 +30,7 @@ export const routes: Routes = [
         loadComponent: () => import('./features/user/find-charging/find-charging').then((m) => m.FindCharging),
       },
       {
-        path: 'book/:providerId',
+        path: 'book/:stationId',
         loadComponent: () => import('./features/user/book-charging/book-charging').then((m) => m.BookCharging),
       },
       {
@@ -57,6 +57,11 @@ export const routes: Routes = [
         path: 'profile',
         loadComponent: () =>
           import('./features/provider/profile/provider-profile').then((m) => m.ProviderProfile),
+      },
+      {
+        path: 'stations',
+        loadComponent: () =>
+          import('./features/provider/stations/provider-stations').then((m) => m.ProviderStations),
       },
       {
         path: 'bookings',

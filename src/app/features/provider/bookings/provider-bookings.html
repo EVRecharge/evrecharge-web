@@ -14,13 +14,24 @@
   } @else if (bookings().length === 0) {
     <p class="evr-empty">No bookings yet.</p>
   } @else {
+    @if (stationOptions().length > 1) {
+      <div class="evr-station-filter">
+        <button mat-stroked-button [class.evr-active]="stationFilter() === null" (click)="stationFilter.set(null)">All stations</button>
+        @for (opt of stationOptions(); track opt[0]) {
+          <button mat-stroked-button [class.evr-active]="stationFilter() === opt[0]" (click)="stationFilter.set(opt[0])">{{ opt[1] }}</button>
+        }
+      </div>
+    }
     <div class="evr-booking-list">
-      @for (booking of bookings(); track booking.bookingId) {
+      @for (booking of visibleBookings(); track booking.bookingId) {
         <mat-card class="evr-booking-card">
           <div class="evr-booking-header">
             <h3>{{ booking.driverName }}</h3>
             <mat-chip [color]="statusColor(booking.status)" highlighted>{{ booking.status }}</mat-chip>
           </div>
+          @if (stationLabel(booking)) {
+            <p><mat-icon inline>ev_station</mat-icon> {{ stationLabel(booking) }}</p>
+          }
           <p><mat-icon inline>schedule</mat-icon> {{ booking.startTime | date: 'medium' }} &rarr; {{ booking.endTime | date: 'shortTime' }}</p>
           @if (booking.driverPhone) {
             <p><mat-icon inline>call</mat-icon> {{ booking.driverPhone }}</p>

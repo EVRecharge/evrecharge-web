@@ -59,7 +59,7 @@
             ></map-marker>
           }
 
-          @for (provider of providers(); track provider.providerId) {
+          @for (provider of providers(); track provider.stationId) {
             <map-marker
               #marker="mapMarker"
               [position]="{ lat: provider.latitude, lng: provider.longitude }"
@@ -70,7 +70,7 @@
           <map-info-window #info="mapInfoWindow">
             @if (selectedProvider(); as p) {
               <div class="evr-info-window">
-                <strong>{{ p.companyName }}</strong>
+                <strong>{{ p.name }}</strong>
                 <div>{{ p.address }}, {{ p.city }}</div>
                 <div>&#8377;{{ p.ratePerHour | number: '1.2-2' }}/hr &middot; {{ p.chargerType }}</div>
                 <button mat-flat-button color="primary" (click)="book(p)">Book now</button>
@@ -99,10 +99,10 @@
       } @else if (providers().length === 0) {
         <p class="evr-empty">No charging providers match your filters yet.</p>
       } @else {
-        @for (provider of providers(); track provider.providerId) {
+        @for (provider of providers(); track provider.stationId) {
           <mat-card class="evr-provider-card">
             <div class="evr-provider-header">
-              <h3>{{ provider.companyName }}</h3>
+              <h3>{{ provider.name }}</h3>
               @if (provider.distanceKm !== undefined) {
                 <span class="evr-distance">{{ provider.distanceKm | number: '1.1-1' }} km</span>
               }

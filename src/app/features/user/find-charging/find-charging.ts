@@ -13,7 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ProviderService } from '../../../core/services/provider.service';
 import { LocationService } from '../../../core/services/location.service';
 import { GoogleMapsLoaderService } from '../../../core/services/google-maps-loader.service';
-import { Provider } from '../../../core/models/provider.model';
+import { Station } from '../../../core/models/provider.model';
 
 type SortMode = 'distance' | 'rate' | 'availability';
 
@@ -48,10 +48,10 @@ export class FindCharging implements OnInit {
   readonly mapReady = signal(false);
   readonly mapsConfigured = this.mapsLoader.isConfigured;
   readonly userLocation = signal<{ lat: number; lng: number } | null>(null);
-  readonly allProviders = signal<Provider[]>([]);
+  readonly allProviders = signal<Station[]>([]);
   readonly cityFilter = signal('');
   readonly sortMode = signal<SortMode>('distance');
-  readonly selectedProvider = signal<Provider | null>(null);
+  readonly selectedProvider = signal<Station | null>(null);
   readonly locationError = signal('');
   /** Geocoded centre of the searched city; used as distance origin when the driver's GPS is unavailable. */
   private readonly cityCenter = signal<google.maps.LatLngLiteral | null>(null);
@@ -116,7 +116,7 @@ export class FindCharging implements OnInit {
 
   loadProviders(): void {
     this.loading.set(true);
-    this.providerService.getAllActive().subscribe({
+    this.providerService.getAllStations().subscribe({
       next: (providers) => {
         this.allProviders.set(providers);
         this.loading.set(false);
@@ -166,7 +166,7 @@ export class FindCharging implements OnInit {
     };
   }
 
-  fitMap(list: Provider[]): void {
+  fitMap(list: Station[]): void {
     const map = this.googleMap?.googleMap;
     if (!map || !window.google?.maps) return;
     const points = list.filter((p) => p.latitude != null && p.longitude != null);
@@ -183,12 +183,12 @@ export class FindCharging implements OnInit {
     map.fitBounds(bounds, 48);
   }
 
-  selectProvider(provider: Provider, infoWindow: MapInfoWindow, marker: MapMarker): void {
+  selectProvider(provider: Station, infoWindow: MapInfoWindow, marker: MapMarker): void {
     this.selectedProvider.set(provider);
     infoWindow.open(marker);
   }
 
-  book(provider: Provider): void {
-    this.router.navigate(['/user/book', provider.providerId]);
+  book(provider: Station): void {
+    this.router.navigate(['/user/book', provider.stationId]);
   }
 }

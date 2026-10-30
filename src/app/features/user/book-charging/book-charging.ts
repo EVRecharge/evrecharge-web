@@ -13,7 +13,7 @@ import { ProviderService } from '../../../core/services/provider.service';
 import { BookingService } from '../../../core/services/booking.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { PaymentService } from '../../../core/services/payment.service';
-import { Provider } from '../../../core/models/provider.model';
+import { Station } from '../../../core/models/provider.model';
 
 @Component({
   selector: 'evr-book-charging',
@@ -41,7 +41,7 @@ export class BookCharging implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly paymentService = inject(PaymentService);
 
-  readonly provider = signal<Provider | null>(null);
+  readonly provider = signal<Station | null>(null);
   readonly loadingProvider = signal(true);
   readonly submitting = signal(false);
   readonly error = signal<string | null>(null);
@@ -69,8 +69,8 @@ export class BookCharging implements OnInit {
   });
 
   ngOnInit(): void {
-    const providerId = Number(this.route.snapshot.paramMap.get('providerId'));
-    this.providerService.getById(providerId).subscribe({
+    const stationId = Number(this.route.snapshot.paramMap.get('stationId'));
+    this.providerService.getStation(stationId).subscribe({
       next: (provider) => {
         this.provider.set(provider);
         this.loadingProvider.set(false);
@@ -107,6 +107,7 @@ export class BookCharging implements OnInit {
       .create({
         userId: session.profileId,
         providerId: provider.providerId!,
+        stationId: provider.stationId,
         startTime: this.toLocalIso(start),
         endTime: this.toLocalIso(end),
         durationInHours,
