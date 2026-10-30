@@ -9,7 +9,7 @@
 
   @if (loading()) {
     <div class="evr-loading"><mat-spinner diameter="32"></mat-spinner></div>
-  } @else {
+  } @else if (current(); as p) {
     <mat-card class="evr-profile-card">
       @if (error()) {
         <div class="evr-error-banner">{{ error() }}</div>
@@ -18,33 +18,171 @@
         <div class="evr-success-banner">Profile updated.</div>
       }
 
-      <form [formGroup]="form" (ngSubmit)="submit()" class="evr-grid">
-        <mat-form-field appearance="outline">
-          <mat-label>Company name</mat-label>
-          <input matInput formControlName="companyName" required />
-        </mat-form-field>
+      @if (!editing()) {
+        <div class="evr-profile-view">
+          <div class="evr-avatar">
+            @if (pictureToShow(); as pic) {
+              <img [src]="pic" alt="Profile picture" />
+            } @else {
+              <mat-icon>person</mat-icon>
+            }
+          </div>
+          <div class="evr-view-main">
+            <h3>{{ p.companyName }}</h3>
+            <p class="evr-muted">{{ p.contactPersonName }}</p>
+          </div>
+          <button mat-flat-button color="primary" (click)="edit()">
+            <mat-icon>edit</mat-icon>
+            Edit profile
+          </button>
+        </div>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Contact person</mat-label>
-          <input matInput formControlName="contactPersonName" required />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Phone number</mat-label>
-          <input matInput formControlName="phoneNumber" required />
-          @if (form.controls.phoneNumber.invalid && form.controls.phoneNumber.touched) {
-            <mat-error>Enter a valid phone number.</mat-error>
+        <dl class="evr-details">
+          <dt>Email</dt><dd>{{ p.email }}</dd>
+          <dt>Phone</dt><dd>{{ p.phoneNumber }}</dd>
+          <dt>Address</dt><dd>{{ p.address }}, {{ p.city }}, {{ p.state }} {{ p.zipCode }}</dd>
+          @if (p.panMasked) {
+            <dt>PAN</dt><dd>{{ p.panMasked }}</dd>
           }
-        </mat-form-field>
-
-        <button mat-flat-button color="primary" type="submit" class="evr-submit evr-span-2" [disabled]="saving()">
-          @if (saving()) {
-            <mat-spinner diameter="20"></mat-spinner>
-          } @else {
-            Save profile
+          @if (p.aadhaarMasked) {
+            <dt>Aadhaar</dt><dd>{{ p.aadhaarMasked }}</dd>
           }
-        </button>
-      </form>
+        </dl>
+      } @else {
+        <form [formGroup]="form" (ngSubmit)="submit()" class="evr-grid">
+          <div class="evr-span-2 evr-picture-row">
+            <div class="evr-avatar">
+              @if (pictureToShow(); as pic) {
+                <img [src]="pic" alt="Profile picture preview" />
+              } @else {
+                <mat-icon>person</mat-icon>
+              }
+            </div>
+            <div class="evr-picture-actions">
+              <input #file type="file" accept="image/jpeg,image/png,image/webp" hidden (change)="onPictureSelected($event)" />
+              <button mat-stroked-button type="button" (click)="file.click()">
+                <mat-icon>photo_camera</mat-icon>
+                {{ pictureToShow() ? 'Change picture' : 'Add picture (optional)' }}
+              </button>
+              @if (pictureToShow()) {
+                <button mat-button type="button" (click)="removePicture()">Remove</button>
+              }
+              @if (pictureError()) {
+                <span class="evr-field-error">{{ pictureError() }}</span>
+              }
+            </div>
+          </div>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Company name</mat-label>
+            <input matInput formControlName="companyName" required />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Contact person</mat-label>
+            <input matInput formControlName="contactPersonName" required />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput [value]="p.email" disabled />
+            <mat-hint>Email can't be changed</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Phone number</mat-label>
+            <input matInput formControlName="phoneNumber" required />
+            @if (form.controls.phoneNumber.invalid && form.controls.phoneNumber.touched) {
+              <mat-error>Enter a valid phone number.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="evr-span-2">
+            <mat-label>Address</mat-label>
+            <input matInput formControlName="address" autocomplete="street-address" required />
+            @if (form.controls.address.invalid && form.controls.address.touched) {
+              <mat-error>Enter your street address.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>City</mat-label>
+            <input matInput formControlName="city" required />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>State</mat-label>
+            <input matInput formControlName="state" required />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>PIN code</mat-label>
+            <input matInput formControlName="zipCode" inputmode="numeric" maxlength="6" required />
+            @if (form.controls.zipCode.invalid && form.controls.zipCode.touched) {
+              <mat-error>Enter a valid 6-digit PIN code.</mat-error>
+            }
+          </mat-form-field>
+
+          <p class="evr-span-2 evr-id-hint">
+            <strong>Identity proof</strong> &mdash; provide your PAN or your Aadhaar number (one is enough).
+            @if (p.panMasked || p.aadhaarMasked) {
+              Leave a field blank to keep the one on file.
+            }
+          </p>
+
+          <mat-form-field appearance="outline">
+            <mat-label>PAN</mat-label>
+            <input
+              matInput
+              formControlName="panNumber"
+              placeholder="{{ p.panMasked || 'ABCDE1234F' }}"
+              maxlength="10"
+              autocomplete="off"
+              (input)="onPanInput($event)"
+            />
+            @if (form.controls.panNumber.errors?.['pan'] && form.controls.panNumber.touched) {
+              <mat-error>Enter a valid PAN, like ABCDE1234F.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Aadhaar number</mat-label>
+            <input
+              matInput
+              formControlName="aadhaarNumber"
+              inputmode="numeric"
+              placeholder="{{ p.aadhaarMasked || '1234 5678 9012' }}"
+              maxlength="14"
+              autocomplete="off"
+              (input)="onAadhaarInput($event)"
+            />
+            @if (form.controls.aadhaarNumber.errors?.['aadhaar'] && form.controls.aadhaarNumber.touched) {
+              <mat-error>Enter a valid 12-digit Aadhaar number.</mat-error>
+            }
+          </mat-form-field>
+
+          @if (form.errors?.['identityRequired'] && (form.controls.panNumber.touched || form.controls.aadhaarNumber.touched)) {
+            <p class="evr-span-2 evr-field-error">Enter your PAN or Aadhaar number &mdash; one of them is required.</p>
+          }
+
+          <div class="evr-span-2 evr-form-actions">
+            @if (p.panMasked || p.aadhaarMasked) {
+              <button mat-stroked-button type="button" (click)="cancel()" [disabled]="saving()">Cancel</button>
+            }
+            <button mat-flat-button color="primary" type="submit" [disabled]="saving()">
+              @if (saving()) {
+                <mat-spinner diameter="20"></mat-spinner>
+              } @else {
+                Save profile
+              }
+            </button>
+          </div>
+
+          <p class="evr-span-2 evr-privacy">
+            Your PAN and Aadhaar are stored encrypted and only shown masked.
+          </p>
+        </form>
+      }
     </mat-card>
   }
 </div>

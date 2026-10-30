@@ -35,6 +35,13 @@ export interface Provider {
   chargerType?: string;
   maxConcurrentCharges?: number;
   mfaEnabled?: boolean;
+  /** Write-only: send to set or replace; the server returns only the masked forms below. */
+  panNumber?: string;
+  aadhaarNumber?: string;
+  panMasked?: string;
+  aadhaarMasked?: string;
+  /** Optional profile photo as an image data URL. */
+  profilePicture?: string;
   createdAt?: string;
   updatedAt?: string;
   /** Client-side only: populated when a distance search has been run. */
