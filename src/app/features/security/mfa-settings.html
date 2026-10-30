@@ -1,0 +1,82 @@
+<div class="evr-container">
+  <div class="evr-page-header">
+    <span class="evr-page-icon"><mat-icon>shield</mat-icon></span>
+    <div>
+      <h2>Security</h2>
+      <p>Protect your account with a one-time code from an authenticator app each time you sign in.</p>
+    </div>
+  </div>
+
+  @if (error()) {
+    <div class="evr-error-banner">{{ error() }}</div>
+  }
+  @if (notice()) {
+    <div class="evr-success-banner">{{ notice() }}</div>
+  }
+
+  @if (loading()) {
+    <div class="evr-loading"><mat-spinner diameter="32"></mat-spinner></div>
+  } @else if (recoveryCodes(); as codes) {
+    <mat-card class="evr-mfa-card">
+      <h3>Two-factor authentication is on</h3>
+      <p>
+        Save these recovery codes somewhere safe. Each works once if you lose access to your authenticator
+        app. <strong>They won't be shown again.</strong>
+      </p>
+      <ul class="evr-recovery-codes">
+        @for (code of codes; track code) {
+          <li>{{ code }}</li>
+        }
+      </ul>
+      <button mat-flat-button color="primary" (click)="dismissRecoveryCodes()">I've saved them</button>
+    </mat-card>
+  } @else if (setup(); as s) {
+    <mat-card class="evr-mfa-card">
+      <h3>Set up your authenticator app</h3>
+      <ol>
+        <li>Open an authenticator app (Google Authenticator, Microsoft Authenticator, Authy&hellip;).</li>
+        <li>Scan this QR code, or enter the key by hand.</li>
+        <li>Type the 6-digit code the app shows to finish.</li>
+      </ol>
+      <img class="evr-qr" [src]="s.qrDataUrl" alt="QR code to add EVRecharge India to your authenticator app" />
+      <p class="evr-secret">Key: <code>{{ s.secret }}</code></p>
+      <p><a [href]="s.otpAuthUri">Open in authenticator app</a> (on this device)</p>
+
+      <form [formGroup]="codeForm" (ngSubmit)="confirmSetup()" class="evr-code-form">
+        <mat-form-field appearance="outline">
+          <mat-label>6-digit code</mat-label>
+          <input matInput formControlName="code" inputmode="numeric" autocomplete="one-time-code" maxlength="7" />
+        </mat-form-field>
+        <div class="evr-form-actions">
+          <button mat-stroked-button type="button" (click)="cancel()" [disabled]="busy()">Cancel</button>
+          <button mat-flat-button color="primary" type="submit" [disabled]="busy()">Turn on</button>
+        </div>
+      </form>
+    </mat-card>
+  } @else if (enabled()) {
+    <mat-card class="evr-mfa-card">
+      <h3><mat-icon inline>verified_user</mat-icon> Two-factor authentication is on</h3>
+      @if (!disabling()) {
+        <button mat-stroked-button color="warn" (click)="disabling.set(true)">Turn off</button>
+      } @else {
+        <p>Enter a code from your authenticator app (or a recovery code) to turn it off.</p>
+        <form [formGroup]="codeForm" (ngSubmit)="confirmDisable()" class="evr-code-form">
+          <mat-form-field appearance="outline">
+            <mat-label>Code</mat-label>
+            <input matInput formControlName="code" autocomplete="one-time-code" />
+          </mat-form-field>
+          <div class="evr-form-actions">
+            <button mat-stroked-button type="button" (click)="cancel()" [disabled]="busy()">Cancel</button>
+            <button mat-flat-button color="warn" type="submit" [disabled]="busy()">Turn off</button>
+          </div>
+        </form>
+      }
+    </mat-card>
+  } @else {
+    <mat-card class="evr-mfa-card">
+      <h3>Two-factor authentication is off</h3>
+      <p>Add a second step at sign-in so a stolen password isn't enough to get into your account.</p>
+      <button mat-flat-button color="primary" (click)="startSetup()" [disabled]="busy()">Set up</button>
+    </mat-card>
+  }
+</div>

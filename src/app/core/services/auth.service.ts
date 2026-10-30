@@ -1,7 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { map, Observable } from 'rxjs';
 
-import { Session } from '../models/auth.model';
+import { MfaChallenge, Role, Session } from '../models/auth.model';
 import { User } from '../models/user.model';
 import { Provider } from '../models/provider.model';
 import { UserService } from './user.service';
@@ -33,9 +33,9 @@ export class AuthService {
     );
   }
 
-  loginAsUser(email: string, password: string): Observable<Session> {
+  loginAsUser(email: string, password: string): Observable<Session | MfaChallenge> {
     return this.userService.login(email, password).pipe(
-      map((res) => this.persist({
+      map((res) => 'mfaRequired' in res ? res : this.persist({
         role: 'USER',
         token: res.token,
         refreshToken: res.refreshToken,
@@ -59,8 +59,34 @@ export class AuthService {
     );
   }
 
-  loginAsProvider(email: string, password: string): Observable<Session> {
+  loginAsProvider(email: string, password: string): Observable<Session | MfaChallenge> {
     return this.providerService.login(email, password).pipe(
+      map((res) => 'mfaRequired' in res ? res : this.persist({
+        role: 'PROVIDER',
+        token: res.token,
+        refreshToken: res.refreshToken,
+        profileId: res.provider.providerId!,
+        email: res.provider.email,
+        displayName: res.provider.companyName,
+      })),
+    );
+  }
+
+  /** Second step of sign-in for accounts with two-factor authentication on. */
+  completeMfaLogin(role: Role, mfaToken: string, code: string): Observable<Session> {
+    if (role === 'USER') {
+      return this.userService.loginMfa(mfaToken, code).pipe(
+        map((res) => this.persist({
+          role: 'USER',
+          token: res.token,
+          refreshToken: res.refreshToken,
+          profileId: res.user.userId!,
+          email: res.user.email,
+          displayName: `${res.user.firstName} ${res.user.lastName}`.trim(),
+        })),
+      );
+    }
+    return this.providerService.loginMfa(mfaToken, code).pipe(
       map((res) => this.persist({
         role: 'PROVIDER',
         token: res.token,

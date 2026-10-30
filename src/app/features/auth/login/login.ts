@@ -9,6 +9,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../../core/services/auth.service';
+import { MfaChallenge, Role, Session } from '../../../core/models/auth.model';
 
 @Component({
   selector: 'evr-login',
@@ -36,6 +37,12 @@ export class Login implements OnInit {
   readonly error = signal<string | null>(null);
   readonly hideDriverPassword = signal(true);
   readonly hideProviderPassword = signal(true);
+  /** Set after the password step when the account needs a second factor. */
+  readonly challenge = signal<{ role: Role; mfaToken: string } | null>(null);
+
+  readonly mfaForm = this.fb.nonNullable.group({
+    code: ['', Validators.required],
+  });
 
   readonly driverForm = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -63,7 +70,7 @@ export class Login implements OnInit {
     this.loading.set(true);
     this.error.set(null);
     this.auth.loginAsUser(email, password).subscribe({
-      next: () => this.router.navigateByUrl('/user/find-charging'),
+      next: (res) => this.afterPassword('USER', res),
       error: (err) => {
         this.loading.set(false);
         this.error.set(err?.error?.error ?? 'Invalid email or password.');
@@ -80,11 +87,47 @@ export class Login implements OnInit {
     this.loading.set(true);
     this.error.set(null);
     this.auth.loginAsProvider(email, password).subscribe({
-      next: () => this.router.navigateByUrl('/provider/profile'),
+      next: (res) => this.afterPassword('PROVIDER', res),
       error: (err) => {
         this.loading.set(false);
         this.error.set(err?.error?.error ?? 'Invalid email or password.');
       },
     });
+  }
+
+  private afterPassword(role: Role, res: Session | MfaChallenge): void {
+    if ('mfaRequired' in res) {
+      this.loading.set(false);
+      this.mfaForm.reset();
+      this.challenge.set({ role, mfaToken: res.mfaToken });
+      return;
+    }
+    this.router.navigateByUrl(role === 'USER' ? '/user/find-charging' : '/provider/profile');
+  }
+
+  submitMfa(): void {
+    const challenge = this.challenge();
+    if (this.mfaForm.invalid || !challenge) {
+      this.mfaForm.markAllAsTouched();
+      return;
+    }
+    this.loading.set(true);
+    this.error.set(null);
+    this.auth.completeMfaLogin(challenge.role, challenge.mfaToken, this.mfaForm.getRawValue().code).subscribe({
+      next: () => this.router.navigateByUrl(challenge.role === 'USER' ? '/user/find-charging' : '/provider/profile'),
+      error: (err) => {
+        this.loading.set(false);
+        this.error.set(err?.error?.error ?? 'Invalid verification code.');
+        // An expired challenge can't be retried -- send them back to the password step.
+        if (err?.status === 401 && /expired/i.test(err?.error?.error ?? '')) {
+          this.challenge.set(null);
+        }
+      },
+    });
+  }
+
+  cancelMfa(): void {
+    this.challenge.set(null);
+    this.error.set(null);
   }
 }

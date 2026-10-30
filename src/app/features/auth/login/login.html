@@ -10,6 +10,25 @@
       <div class="evr-error-banner">{{ error() }}</div>
     }
 
+    @if (challenge()) {
+      <form [formGroup]="mfaForm" (ngSubmit)="submitMfa()" class="evr-tab-form">
+        <p class="evr-subtitle">
+          Enter the 6-digit code from your authenticator app, or one of your recovery codes.
+        </p>
+        <mat-form-field appearance="outline" class="evr-form-field">
+          <mat-label>Verification code</mat-label>
+          <input matInput formControlName="code" autocomplete="one-time-code" autofocus required />
+        </mat-form-field>
+        <button mat-flat-button color="primary" type="submit" class="evr-submit" [disabled]="loading()">
+          @if (loading()) {
+            <mat-spinner diameter="20"></mat-spinner>
+          } @else {
+            Verify
+          }
+        </button>
+        <p class="evr-hint"><a href="javascript:void(0)" (click)="cancelMfa()">Back to sign in</a></p>
+      </form>
+    } @else {
     <mat-tab-group animationDuration="150ms" mat-stretch-tabs="true">
       <mat-tab label="I'm a Driver">
         <form [formGroup]="driverForm" (ngSubmit)="submitDriver()" class="evr-tab-form">
@@ -106,5 +125,6 @@
         </form>
       </mat-tab>
     </mat-tab-group>
+    }
   </mat-card>
 </div>

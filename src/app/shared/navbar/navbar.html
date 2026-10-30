@@ -9,6 +9,7 @@
     <a mat-button routerLink="/user/bookings" routerLinkActive="evr-active">My Bookings</a>
     <a mat-button routerLink="/user/payment-methods" routerLinkActive="evr-active">Payment Methods</a>
     <a mat-button routerLink="/user/profile" routerLinkActive="evr-active">Profile</a>
+    <a mat-button routerLink="/user/security" routerLinkActive="evr-active">Security</a>
   }
 
   @if (auth.role() === 'PROVIDER') {
@@ -16,6 +17,7 @@
     <a mat-button routerLink="/provider/stations" routerLinkActive="evr-active">Stations</a>
     <a mat-button routerLink="/provider/bookings" routerLinkActive="evr-active">Bookings</a>
     <a mat-button routerLink="/provider/payout-account" routerLinkActive="evr-active">Payout Account</a>
+    <a mat-button routerLink="/provider/security" routerLinkActive="evr-active">Security</a>
   }
 
   <span class="evr-spacer"></span>

@@ -10,6 +10,7 @@ export interface User {
   zipCode?: string;
   vehicleType?: string;
   vehicleNumber?: string;
+  mfaEnabled?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }

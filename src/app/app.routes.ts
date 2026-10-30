@@ -42,6 +42,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/user/profile/user-profile').then((m) => m.UserProfile),
       },
       {
+        path: 'security',
+        loadComponent: () => import('./features/security/mfa-settings').then((m) => m.MfaSettings),
+      },
+      {
         path: 'payment-methods',
         loadComponent: () =>
           import('./features/user/payment-methods/payment-methods').then((m) => m.PaymentMethods),
@@ -67,6 +71,10 @@ export const routes: Routes = [
         path: 'bookings',
         loadComponent: () =>
           import('./features/provider/bookings/provider-bookings').then((m) => m.ProviderBookings),
+      },
+      {
+        path: 'security',
+        loadComponent: () => import('./features/security/mfa-settings').then((m) => m.MfaSettings),
       },
       {
         path: 'payout-account',

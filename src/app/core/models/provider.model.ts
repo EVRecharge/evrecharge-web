@@ -34,6 +34,7 @@ export interface Provider {
   ratePerHour: number;
   chargerType?: string;
   maxConcurrentCharges?: number;
+  mfaEnabled?: boolean;
   createdAt?: string;
   updatedAt?: string;
   /** Client-side only: populated when a distance search has been run. */

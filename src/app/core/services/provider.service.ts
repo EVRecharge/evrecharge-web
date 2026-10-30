@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Provider, Station } from '../models/provider.model';
+import { MfaChallenge } from '../models/auth.model';
 
 interface AuthResponse {
   message: string;
@@ -20,8 +21,28 @@ export class ProviderService {
     return this.http.post<AuthResponse>(`${this.base}/register`, { ...provider, password });
   }
 
-  login(email: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.base}/login`, { email, password });
+  login(email: string, password: string): Observable<AuthResponse | MfaChallenge> {
+    return this.http.post<AuthResponse | MfaChallenge>(`${this.base}/login`, { email, password });
+  }
+
+  loginMfa(mfaToken: string, code: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.base}/login/mfa`, { mfaToken, code });
+  }
+
+  getMfaEnabled(providerId: number): Observable<boolean> {
+    return this.getById(providerId).pipe(map((a) => !!a.mfaEnabled));
+  }
+
+  mfaSetup(providerId: number): Observable<{ secret: string; otpAuthUri: string }> {
+    return this.http.post<{ secret: string; otpAuthUri: string }>(`${this.base}/${providerId}/mfa/setup`, null);
+  }
+
+  mfaEnable(providerId: number, code: string): Observable<{ recoveryCodes: string[] }> {
+    return this.http.post<{ recoveryCodes: string[] }>(`${this.base}/${providerId}/mfa/enable`, { code });
+  }
+
+  mfaDisable(providerId: number, code: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.base}/${providerId}/mfa/disable`, { code });
   }
 
   getById(providerId: number): Observable<Provider> {
