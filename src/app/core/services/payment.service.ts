@@ -103,6 +103,7 @@ export class PaymentService {
         order_id: order.razorpayOrderId,
         customer_id: order.razorpayCustomerId,
         recurring: '1',
+        save: 1,
         name: 'EVRecharge India',
         description: 'Add payment method (refunded automatically)',
         prefill: { email: options.prefillEmail, contact: options.prefillContact },

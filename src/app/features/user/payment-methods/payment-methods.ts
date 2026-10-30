@@ -50,12 +50,18 @@ export class PaymentMethods implements OnInit {
     this.notice.set(null);
 
     const session = this.auth.session();
-    const result = await this.paymentService.addPaymentMethod({
-      description: 'Add payment method',
-      prefillEmail: session?.email,
-    });
+    let result;
+    try {
+      result = await this.paymentService.addPaymentMethod({
+        description: 'Add payment method',
+        prefillEmail: session?.email,
+      });
+    } catch {
+      result = { success: false, message: 'Something went wrong while adding the payment method.' };
+    } finally {
+      this.adding.set(false);
+    }
 
-    this.adding.set(false);
     if (result.success && result.method) {
       this.methods.set([...this.methods(), result.method]);
       this.notice.set('Payment method added.');
