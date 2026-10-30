@@ -1,4 +1,9 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { map } from 'rxjs';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -6,17 +11,37 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PaymentService } from '../../../core/services/payment.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { PaymentMethod } from '../../../core/models/payment.model';
+import {
+  cardholderNameValidator,
+  cardNumberValidator,
+  cvvValidatorFor,
+  detectBrand,
+  digitsOnly,
+  expiryValidator,
+  formatCardNumber,
+  formatExpiry,
+  upiIdValidator,
+} from '../../../core/util/card-validators';
 
 @Component({
   selector: 'evr-payment-methods',
   standalone: true,
-  imports: [MatCardModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
+  imports: [
+    ReactiveFormsModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatFormFieldModule,
+    MatInputModule,
+  ],
   templateUrl: './payment-methods.html',
   styleUrl: './payment-methods.scss',
 })
 export class PaymentMethods implements OnInit {
   private readonly paymentService = inject(PaymentService);
   private readonly auth = inject(AuthService);
+  private readonly fb = inject(FormBuilder);
 
   readonly loading = signal(true);
   readonly methods = signal<PaymentMethod[]>([]);
@@ -28,6 +53,24 @@ export class PaymentMethods implements OnInit {
   /** Whether the "what are you adding?" panel is open, and which option is picked in it. */
   readonly choosing = signal(false);
   readonly methodType = signal<'card' | 'upi'>('card');
+
+  private readonly numberControl = this.fb.nonNullable.control('', [Validators.required, cardNumberValidator]);
+
+  readonly cardForm = this.fb.nonNullable.group({
+    name: ['', [Validators.required, cardholderNameValidator]],
+    number: this.numberControl,
+    expiry: ['', [Validators.required, expiryValidator]],
+    cvv: ['', [Validators.required, cvvValidatorFor(() => this.numberControl.value)]],
+  });
+
+  readonly upiForm = this.fb.nonNullable.group({
+    vpa: ['', [Validators.required, upiIdValidator]],
+  });
+
+  /** Network detected from the number as it's typed (drives the label, CVV length and number grouping). */
+  readonly brand = toSignal(this.numberControl.valueChanges.pipe(map((n: string) => detectBrand(n))), {
+    initialValue: detectBrand(''),
+  });
 
   ngOnInit(): void {
     this.load();
@@ -47,6 +90,29 @@ export class PaymentMethods implements OnInit {
     });
   }
 
+  onNumberInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const formatted = formatCardNumber(input.value);
+    input.value = formatted;
+    this.cardForm.controls.number.setValue(formatted);
+    // The CVV length depends on the network, so re-check it whenever the number changes.
+    this.cardForm.controls.cvv.updateValueAndValidity();
+  }
+
+  onExpiryInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const formatted = formatExpiry(input.value);
+    input.value = formatted;
+    this.cardForm.controls.expiry.setValue(formatted);
+  }
+
+  onCvvInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const digits = digitsOnly(input.value).slice(0, 4);
+    input.value = digits;
+    this.cardForm.controls.cvv.setValue(digits);
+  }
+
   openChooser(): void {
     this.error.set(null);
     this.notice.set(null);
@@ -54,6 +120,14 @@ export class PaymentMethods implements OnInit {
   }
 
   async addMethod(): Promise<void> {
+    const form = this.methodType() === 'card' ? this.cardForm : this.upiForm;
+    if (form.invalid) {
+      form.markAllAsTouched();
+      return;
+    }
+    const card = this.methodType() === 'card' ? this.cardForm.getRawValue() : null;
+    const vpa = this.methodType() === 'upi' ? this.upiForm.getRawValue().vpa.trim() : undefined;
+
     this.adding.set(true);
     this.error.set(null);
     this.notice.set(null);
@@ -65,11 +139,16 @@ export class PaymentMethods implements OnInit {
         description: 'Add payment method',
         prefillEmail: session?.email,
         method: this.methodType(),
+        card: card ? { ...card, number: digitsOnly(card.number), name: card.name.trim() } : undefined,
+        vpa,
       });
     } catch {
       result = { success: false, message: 'Something went wrong while adding the payment method.' };
     } finally {
       this.adding.set(false);
+      // Don't keep card details around once they've been handed to the secure window.
+      this.cardForm.reset();
+      this.upiForm.reset();
     }
 
     if (result.success && result.method) {

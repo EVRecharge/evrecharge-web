@@ -46,13 +46,104 @@
       </div>
 
       @if (methodType() === 'card') {
+        <form [formGroup]="cardForm" (ngSubmit)="addMethod()" class="evr-pay-fields" autocomplete="on" novalidate>
+          <mat-form-field appearance="outline" class="evr-span-2">
+            <mat-label>Name on card</mat-label>
+            <input matInput formControlName="name" autocomplete="cc-name" maxlength="50" />
+            @if (cardForm.controls.name.errors; as e) {
+              <mat-error>
+                @if (e['required']) { Enter the name as printed on the card. }
+                @else if (e['nameLength']) { Name must be 2-50 characters. }
+                @else { Use letters, spaces, and . ' - only. }
+              </mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="evr-span-2">
+            <mat-label>Card number</mat-label>
+            <input
+              matInput
+              inputmode="numeric"
+              autocomplete="cc-number"
+              maxlength="23"
+              placeholder="1234 5678 9012 3456"
+              [value]="cardForm.controls.number.value"
+              (input)="onNumberInput($event)"
+              (blur)="cardForm.controls.number.markAsTouched()"
+            />
+            @if (brand().brand !== 'unknown') {
+              <span matSuffix class="evr-brand">{{ brand().label }}</span>
+            }
+            @if (cardForm.controls.number.errors; as e) {
+              <mat-error>
+                @if (e['required']) { Enter your card number. }
+                @else if (e['cardLength']) { This doesn't look like a complete {{ brand().label }} number. }
+                @else { That card number isn't valid. Check for a typo. }
+              </mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Expiry (MM/YY)</mat-label>
+            <input
+              matInput
+              inputmode="numeric"
+              autocomplete="cc-exp"
+              maxlength="5"
+              placeholder="MM/YY"
+              [value]="cardForm.controls.expiry.value"
+              (input)="onExpiryInput($event)"
+              (blur)="cardForm.controls.expiry.markAsTouched()"
+            />
+            @if (cardForm.controls.expiry.errors; as e) {
+              <mat-error>
+                @if (e['required']) { Enter the expiry date. }
+                @else if (e['expired']) { This card has expired. }
+                @else { Use the format MM/YY. }
+              </mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>CVV</mat-label>
+            <input
+              matInput
+              type="password"
+              inputmode="numeric"
+              autocomplete="cc-csc"
+              maxlength="4"
+              [value]="cardForm.controls.cvv.value"
+              (input)="onCvvInput($event)"
+              (blur)="cardForm.controls.cvv.markAsTouched()"
+            />
+            @if (cardForm.controls.cvv.errors; as e) {
+              <mat-error>
+                @if (e['required']) { Enter the CVV. }
+                @else if (e['cvvLength']) { {{ brand().cvvLength }} digits for {{ brand().label }}. }
+                @else { Digits only. }
+              </mat-error>
+            }
+          </mat-form-field>
+        </form>
         <p class="evr-hint">
-          You'll enter your card number, expiry and CVV in Razorpay's secure window &mdash; they never touch our servers.
+          Your card details are passed straight to Razorpay's secure window to verify and save the card &mdash; they
+          are never sent to or stored on our servers.
         </p>
       } @else {
+        <form [formGroup]="upiForm" (ngSubmit)="addMethod()" class="evr-pay-fields" novalidate>
+          <mat-form-field appearance="outline" class="evr-span-2">
+            <mat-label>UPI ID</mat-label>
+            <input matInput formControlName="vpa" placeholder="name@bank" autocomplete="off" autocapitalize="off" />
+            @if (upiForm.controls.vpa.errors; as e) {
+              <mat-error>
+                @if (e['required']) { Enter your UPI ID. }
+                @else { Enter a valid UPI ID, like name@okhdfcbank. }
+              </mat-error>
+            }
+          </mat-form-field>
+        </form>
         <p class="evr-hint">
-          You'll enter your UPI ID (the one linked to your bank account) in Razorpay's secure window and approve the
-          request in your UPI app.
+          This is the UPI ID linked to your bank account. You'll approve a small authorization request in your UPI app.
         </p>
       }
       <p class="evr-hint">We run a small INR 1 authorization to save it, then refund it automatically.</p>

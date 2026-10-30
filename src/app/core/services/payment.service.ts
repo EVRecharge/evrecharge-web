@@ -26,6 +26,9 @@ export interface CheckoutOptions {
   prefillContact?: string;
   /** Limits the checkout window to just this method (used when saving a payment method). */
   method?: 'card' | 'upi';
+  /** Card details typed on our page; handed straight to Razorpay's window as prefill, never sent to our API. */
+  card?: { name: string; number: string; expiry: string; cvv: string };
+  vpa?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -111,7 +114,20 @@ export class PaymentService {
           : undefined,
         name: 'EVRecharge India',
         description: 'Add payment method (refunded automatically)',
-        prefill: { email: options.prefillEmail, contact: options.prefillContact },
+        prefill: {
+          email: options.prefillEmail,
+          contact: options.prefillContact,
+          ...(options.method ? { method: options.method } : {}),
+          ...(options.card
+            ? {
+                'card[name]': options.card.name,
+                'card[number]': options.card.number,
+                'card[expiry]': options.card.expiry,
+                'card[cvv]': options.card.cvv,
+              }
+            : {}),
+          ...(options.vpa ? { vpa: options.vpa } : {}),
+        },
         theme: { color: '#0b6e4f' },
         handler: (response: unknown) => {
           const payload = response as {

@@ -115,3 +115,29 @@
   gap: 12px;
   margin-top: 12px;
 }
+
+.evr-pay-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 16px;
+  margin-top: 8px;
+
+  .evr-span-2 {
+    grid-column: span 2;
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+
+    .evr-span-2 {
+      grid-column: span 1;
+    }
+  }
+}
+
+.evr-brand {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--evr-muted);
+  padding-right: 8px;
+}
