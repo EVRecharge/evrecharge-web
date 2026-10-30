@@ -25,6 +25,12 @@
           <div class="evr-success-banner">Booking requested &mdash; redirecting to your bookings&hellip;</div>
         }
 
+        <div class="evr-info-banner">
+          <mat-icon inline>verified</mat-icon>
+          Requesting a booking costs nothing. You're only charged once the station confirms it, and you can cancel
+          for free until then. After confirmation, cancelling keeps 10% of the cost and refunds the rest.
+        </div>
+
         @if (hasSavedMethod() === false) {
           <div class="evr-info-banner">
             <mat-icon inline>info</mat-icon>

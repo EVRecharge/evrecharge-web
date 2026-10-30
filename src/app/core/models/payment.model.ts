@@ -21,6 +21,7 @@ export interface TransactionResponse {
   currency: string;
   status: TransactionStatus;
   createdAt: string;
+  refundedAmountPaise?: number;
 }
 
 export interface PaymentMethod {
