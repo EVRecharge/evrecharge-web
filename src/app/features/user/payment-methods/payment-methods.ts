@@ -153,11 +153,24 @@ export class PaymentMethods implements OnInit {
 
     if (result.success && result.method) {
       this.choosing.set(false);
-      this.methods.set([...this.methods(), result.method]);
-      this.notice.set('Payment method added.');
+      this.notice.set(
+        `${this.describe(result.method)} was saved to your account${result.method.isPrimary ? ' and set as your primary payment method' : ''}.`,
+      );
+      // Re-read from the server so the list shows exactly what's stored against this account.
+      this.paymentService.listMethods().subscribe({
+        next: (methods) => this.methods.set(methods),
+        error: () => this.methods.set([...this.methods(), result.method!]),
+      });
     } else if (result.message) {
       this.error.set(result.message);
     }
+  }
+
+  /** "Visa •••• 4242" or the masked UPI ID. */
+  describe(method: PaymentMethod): string {
+    return method.method === 'card'
+      ? `${method.cardNetwork ?? 'Card'} •••• ${method.cardLast4 ?? ''}`.trim()
+      : (method.upiVpaMasked ?? 'UPI');
   }
 
   makePrimary(method: PaymentMethod): void {
