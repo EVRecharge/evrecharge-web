@@ -39,6 +39,17 @@ body {
   color: var(--evr-ink);
 }
 
+/* Very light charging-plug watermark on every page. Sits above content but ignores clicks. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url('/watermark.svg') center / min(60vmin, 420px) no-repeat;
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 1;
+}
+
 * {
   box-sizing: border-box;
 }

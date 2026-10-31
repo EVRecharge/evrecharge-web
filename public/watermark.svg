@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none" stroke="#0b6e4f" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+  <title>Charging plug with a leaf</title>
+  <circle cx="200" cy="200" r="170"/>
+  <path d="M160 70 V120 M240 70 V120"/>
+  <path d="M130 120 H270 V190 Q270 240 200 240 Q130 240 130 190 Z"/>
+  <path d="M200 240 V280"/>
+  <path d="M200 280 Q200 330 150 340"/>
+  <path d="M215 160 L190 195 H208 L198 222 L230 182 H212 Z" fill="#0b6e4f" stroke="none"/>
+  <path d="M250 290 Q250 240 300 240 Q300 290 250 290 Z M250 290 L282 258"/>
+</svg>
