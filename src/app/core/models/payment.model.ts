@@ -40,6 +40,8 @@ export interface CheckoutOrder {
   currency: string;
   razorpayKeyId: string;
   razorpayCustomerId: string;
+  /** Simulated setup: skip Razorpay Checkout and verify straight away. */
+  mock?: boolean;
 }
 
 export type SetupOrderResponse = CheckoutOrder;
@@ -48,6 +50,11 @@ export interface VerifySetupRequest {
   razorpayOrderId: string;
   razorpayPaymentId: string;
   razorpaySignature: string;
+  /** Simulated setup only: the non-sensitive summary of what was entered. */
+  mockMethod?: 'card' | 'upi';
+  mockCardLast4?: string;
+  mockCardNetwork?: string;
+  mockVpa?: string;
 }
 
 export type PayoutAccountStatus = 'NOT_STARTED' | 'CREATED' | 'ACTIVATED' | 'NEEDS_CLARIFICATION' | 'REJECTED';

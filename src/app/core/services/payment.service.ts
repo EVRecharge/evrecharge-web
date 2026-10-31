@@ -14,6 +14,7 @@ import {
   VerifyPaymentRequest,
   VerifySetupRequest,
 } from '../models/payment.model';
+import { detectBrand } from '../util/card-validators';
 
 export interface CheckoutResult {
   success: boolean;
@@ -93,6 +94,28 @@ export class PaymentService {
     } catch (err: unknown) {
       const message = (err as { error?: { error?: string } })?.error?.error ?? 'Could not start adding this payment method.';
       return { success: false, message };
+    }
+
+    if (order.mock) {
+      // Simulated Razorpay: nothing leaves the browser but the last 4 digits / masked-able UPI ID.
+      const digits = options.card?.number ?? '';
+      try {
+        const method = await firstValueFrom(
+          this.verifyMethodSetup({
+            razorpayOrderId: order.razorpayOrderId,
+            razorpayPaymentId: `pay_mock_${Date.now()}`,
+            razorpaySignature: 'mock',
+            mockMethod: options.method,
+            mockCardLast4: options.method === 'card' ? digits.slice(-4) : undefined,
+            mockCardNetwork: options.method === 'card' ? detectBrand(digits).brand : undefined,
+            mockVpa: options.method === 'upi' ? options.vpa : undefined,
+          }),
+        );
+        return { success: true, method };
+      } catch (err: unknown) {
+        const message = (err as { error?: { error?: string } })?.error?.error ?? 'Could not save this payment method.';
+        return { success: false, message };
+      }
     }
 
     const loaded = await this.razorpayLoader.load();
